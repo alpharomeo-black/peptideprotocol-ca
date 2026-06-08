@@ -16,20 +16,12 @@ Do not keep editing SiteGround manually once this is connected.
 - GitHub repo: `https://github.com/alpharomeo-black/peptideprotocol-ca.git`
 - Default branch: `main`
 
-This environment still cannot create a local `.git` folder, so the first push needs to happen either:
-
-- from your Mac terminal, or
-- by uploading the files into the GitHub repo in the browser
-
-Suggested local setup:
+This repo is already connected to GitHub. The day-to-day flow is now:
 
 ```bash
-git init
-git remote add origin https://github.com/alpharomeo-black/peptideprotocol-ca.git
 git add .
-git commit -m "Initial Peptide Protocol site"
-git branch -M main
-git push -u origin main
+git commit -m "Describe the change"
+git push
 ```
 
 ## SiteGround deploy target
@@ -49,8 +41,9 @@ Add these repository secrets before enabling auto-deploy:
 - `SITEGROUND_SSH_PORT`
 - `SITEGROUND_SSH_USER`
 - `SITEGROUND_SSH_PRIVATE_KEY`
-- `SITEGROUND_SSH_PASSPHRASE`
 - `SITEGROUND_REMOTE_PATH`
+
+`SITEGROUND_SSH_PRIVATE_KEY` should be the full unencrypted OpenSSH private key used for SiteGround deploy access.
 
 ## What the workflow deploys
 
@@ -66,6 +59,13 @@ The deploy workflow should publish only the live site files:
 - `assets/`
 - `scripts/`
 - `styles/`
+
+It should not publish local notes, uploads, or setup helpers such as:
+
+- `repo-upload/`
+- `peptideprotocol-site-content.md`
+- `.env`
+- `.github/`
 
 ## Remaining polish after pipeline setup
 
