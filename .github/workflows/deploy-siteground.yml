@@ -15,11 +15,11 @@ jobs:
 
       - name: Start SSH agent with SiteGround key
         env:
-          SITEGROUND_SSH_PRIVATE_KEY: ${{ secrets.SITEGROUND_SSH_PRIVATE_KEY }}
+          SITEGROUND_SSH_PRIVATE_KEY_B64: ${{ secrets.SITEGROUND_SSH_PRIVATE_KEY_B64 }}
           SITEGROUND_SSH_PASSPHRASE: ${{ secrets.SITEGROUND_SSH_PASSPHRASE }}
         run: |
           mkdir -p ~/.ssh
-          printf '%s\n' "$SITEGROUND_SSH_PRIVATE_KEY" > ~/.ssh/siteground_key
+          printf '%s' "$SITEGROUND_SSH_PRIVATE_KEY_B64" | base64 --decode > ~/.ssh/siteground_key
           chmod 600 ~/.ssh/siteground_key
           if [ -n "$SITEGROUND_SSH_PASSPHRASE" ]; then
             ssh-keygen -p -P "$SITEGROUND_SSH_PASSPHRASE" -N "" -f ~/.ssh/siteground_key >/dev/null

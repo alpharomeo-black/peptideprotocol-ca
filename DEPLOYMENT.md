@@ -40,11 +40,11 @@ Add these repository secrets before enabling auto-deploy:
 - `SITEGROUND_SSH_HOST`
 - `SITEGROUND_SSH_PORT`
 - `SITEGROUND_SSH_USER`
-- `SITEGROUND_SSH_PRIVATE_KEY`
+- `SITEGROUND_SSH_PRIVATE_KEY_B64`
 - `SITEGROUND_SSH_PASSPHRASE` if the saved key is encrypted
 - `SITEGROUND_REMOTE_PATH`
 
-`SITEGROUND_SSH_PRIVATE_KEY` should be the full OpenSSH private key used for SiteGround deploy access. If that key is encrypted, also save `SITEGROUND_SSH_PASSPHRASE` and the workflow will unlock it before deploy.
+`SITEGROUND_SSH_PRIVATE_KEY_B64` should be the base64-encoded OpenSSH private key used for SiteGround deploy access. If that key is encrypted, also save `SITEGROUND_SSH_PASSPHRASE` and the workflow will unlock it before deploy.
 
 ## What the workflow deploys
 
