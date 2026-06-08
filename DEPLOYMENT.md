@@ -6,7 +6,7 @@ This project should use one clean path:
 
 1. Edit files locally
 2. Push to GitHub
-3. GitHub Actions deploys to SiteGround over SSH
+3. Publish to SiteGround with the local deploy script
 4. SiteGround serves the updated files from `public_html`
 
 Do not keep editing SiteGround manually once this is connected.
@@ -22,6 +22,12 @@ This repo is already connected to GitHub. The day-to-day flow is now:
 git add .
 git commit -m "Describe the change"
 git push
+```
+
+To publish the same changes live:
+
+```bash
+bash scripts/deploy-siteground.sh
 ```
 
 ## SiteGround deploy target
@@ -45,6 +51,20 @@ Add these repository secrets before enabling auto-deploy:
 - `SITEGROUND_REMOTE_PATH`
 
 `SITEGROUND_SSH_PRIVATE_KEY_B64` should be the base64-encoded OpenSSH private key used for SiteGround deploy access. If that key is encrypted, also save `SITEGROUND_SSH_PASSPHRASE` and the workflow will unlock it before deploy.
+
+## Local deploy script
+
+The local publisher reads `.env` and supports either:
+
+- `SITEGROUND_SSH_KEY_PATH`
+- `SITEGROUND_SSH_PRIVATE_KEY_B64`
+- `SITEGROUND_SSH_PRIVATE_KEY`
+
+Recommended local setup:
+
+- keep the working key on your Mac
+- point `.env` to it with `SITEGROUND_SSH_KEY_PATH`
+- run `bash scripts/deploy-siteground.sh` whenever you want the current repo version live
 
 ## What the workflow deploys
 
@@ -70,6 +90,7 @@ It should not publish local notes, uploads, or setup helpers such as:
 
 ## Remaining polish after pipeline setup
 
+- finish a fully stable GitHub Actions auto-deploy
 - hero slider sizing and slide imagery
 - unique feature images for each article
 - final live QA on desktop and mobile
