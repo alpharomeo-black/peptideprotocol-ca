@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Peptide Protocol | Home</title>
+  <meta name="description" content="Peptide Protocol offers a premium peptide reconstitution calculator, protocol planning tools, and honest wellness education.">
+  <link rel="stylesheet" href="styles/site.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+  <script src="scripts/site.js" defer></script>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <div class="inner nav">
+        <a class="brand" href="index.html" aria-label="Peptide Protocol home">
+          <img class="brand-logo" src="assets/Peptide-Protocol-Logo-Biege.svg" alt="Peptide Protocol">
+        </a>
+        <div class="nav-wrap">
+          <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primaryNav" data-menu-toggle>
+            <span></span>
+            <span class="sr-only">Open navigation</span>
+          </button>
+          <nav class="nav-links" id="primaryNav" aria-label="Primary" data-nav-links>
+            <a class="is-active" href="#calculator">Calculator</a>
+            <a href="articles.html">Articles</a>
+            <a href="about.html">About</a>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-frame">
+          <article class="hero-slide is-active" data-slide>
+            <img class="hero-media" src="assets/home-hero-alt.png" alt="Healthy couple standing together outdoors in warm golden light">
+            <div class="hero-wash"></div>
+            <div class="hero-grid">
+              <div class="hero-copy">
+                <div class="eyebrow">PeptideProtocol.ca</div>
+                <h1 class="display">Live Better. Feel Human Again.</h1>
+                <p>Science-backed protocols, precision dosing, empowering you to take control of your health.</p>
+                <div class="hero-actions">
+                  <a class="button button-primary" href="#calculator">Start Your Protocol</a>
+                  <a class="button button-secondary" href="#calculator">Scroll Down To Calculator</a>
+                </div>
+                <div class="hero-note">Luxury wellness research, clear math, honest field notes.</div>
+              </div>
+            </div>
+          </article>
+
+          <article class="hero-slide" data-slide>
+            <img class="hero-media" src="assets/home-hero.jpg" alt="Warm sunset wellness scene">
+            <div class="hero-wash"></div>
+            <div class="hero-grid">
+              <div class="hero-copy">
+                <div class="eyebrow">Protocol Planning</div>
+                <h1 class="display">Precise Dosing. Practical Routines.</h1>
+                <p>Use the calculator, save a protocol summary, and move through the week with cleaner structure and less guesswork.</p>
+                <div class="hero-actions">
+                  <a class="button button-primary" href="#download">Download My Protocol</a>
+                  <a class="button button-secondary" href="what-is-a-protocol.html">Read The Protocol Guide</a>
+                </div>
+                <div class="hero-note">Designed for real people, not clinical portals or sales funnels.</div>
+              </div>
+            </div>
+          </article>
+
+          <article class="hero-slide" data-slide>
+            <img class="hero-media" src="assets/about-hero.png" alt="Couple reviewing protocol notes together in a warm interior">
+            <div class="hero-wash"></div>
+            <div class="hero-grid">
+              <div class="hero-copy">
+                <div class="eyebrow">Track The Details</div>
+                <h1 class="display">Keep The Setup Clear. Keep The Routine Repeatable.</h1>
+                <p>Turn reconstitution math, supply notes, and weekly timing into one calm protocol record you can actually follow.</p>
+                <div class="hero-actions">
+                  <a class="button button-primary" href="#download">Download My Protocol</a>
+                  <a class="button button-secondary" href="reconstitution-without-guesswork.html">Read The Reconstitution Guide</a>
+                </div>
+                <div class="hero-note">Built to keep the calculator and the real-world routine in sync.</div>
+              </div>
+            </div>
+          </article>
+
+          <div class="hero-dots" role="tablist" aria-label="Hero slides">
+            <button class="hero-dot" type="button" aria-current="true" aria-label="Show first hero slide" data-hero-dot="0"></button>
+            <button class="hero-dot" type="button" aria-current="false" aria-label="Show second hero slide" data-hero-dot="1"></button>
+            <button class="hero-dot" type="button" aria-current="false" aria-label="Show third hero slide" data-hero-dot="2"></button>
+          </div>
+        </div>
+      </section>
+
+      <section id="calculator">
+        <div class="inner">
+          <div class="section-head">
+            <div>
+              <div class="section-kicker">Peptide Reconstitution Calculator</div>
+              <h2>Choose The Peptide. Set The Dose. Get The Units.</h2>
+            </div>
+            <p>Switch between Standard, Reverse, Dilution, and Manual mode to calculate from the direction that matches the protocol you are actually holding in your hand.</p>
+          </div>
+
+          <div class="calculator-shell">
+            <div class="calc-panel">
+              <form id="calculatorForm">
+                <div class="mode-tabs" id="modeTabs" aria-label="Calculator modes">
+                  <button class="mode-tab is-active" type="button" data-mode="standard">Standard</button>
+                  <button class="mode-tab" type="button" data-mode="reverse">Reverse</button>
+                  <button class="mode-tab" type="button" data-mode="dilution">Dilution</button>
+                  <button class="mode-tab" type="button" data-mode="manual">Manual</button>
+                </div>
+
+                <div class="calc-grid">
+                  <div class="vial-card">
+                    <img src="assets/vial.png" alt="Peptide vial">
+                    <strong id="vialLabel">Retatrutide</strong>
+                    <p class="small-copy" id="vialModeNote">Available vial strengths for this peptide.</p>
+                  </div>
+
+                  <div style="display:grid;gap:16px;">
+                    <div class="form-grid">
+                      <div class="field is-wide mode-field" data-hide-mode="manual">
+                        <label for="peptide">Select Peptide</label>
+                        <select id="peptide"></select>
+                      </div>
+
+                      <div class="field is-wide mode-field is-hidden" data-show-mode="manual">
+                        <label for="customPeptideName">Custom Peptide Name</label>
+                        <input id="customPeptideName" type="text" placeholder="Enter a peptide or custom protocol name">
+                      </div>
+                    </div>
+
+                    <div class="info-card">
+                      <strong id="infoName">Retatrutide</strong>
+                      <p id="infoDescription">A metabolic peptide commonly documented for appetite control, body-composition support, and slower weekly protocol pacing.</p>
+                      <div class="small-copy" style="margin-top:12px;display:grid;gap:6px;">
+                        <span><strong style="display:inline;color:var(--fg);letter-spacing:0;">Half Life:</strong> <span id="infoHalfLife">About 6 days</span></span>
+                        <span><strong style="display:inline;color:var(--fg);letter-spacing:0;">Documented Range:</strong> <span id="infoRange">0.5 to 12 mg weekly</span></span>
+                        <a id="infoLink" href="articles.html#retatrutide" style="color:var(--accent-deep);font-weight:700;">Read Full Article →</a>
+                      </div>
+                    </div>
+
+                    <div class="form-grid">
+                      <div class="field mode-field" data-show-mode="standard">
+                        <label for="vialSize">Quick Vial Presets</label>
+                        <select id="vialSize"></select>
+                      </div>
+                      <div class="field">
+                        <label for="peptideAmount">Peptide Amount mg</label>
+                        <input id="peptideAmount" type="number" min="0.01" step="0.01" value="10">
+                      </div>
+                      <div class="field mode-field" data-hide-mode="dilution">
+                        <label for="bacWater">BAC Water mL</label>
+                        <input id="bacWater" type="number" min="0.1" step="0.1" value="2.0">
+                      </div>
+                      <div class="field mode-field" data-show-mode="dilution">
+                        <label for="dilutionDesiredUnits">Desired Units</label>
+                        <input id="dilutionDesiredUnits" type="number" min="1" step="0.1" value="10">
+                      </div>
+                      <div class="field mode-field" data-show-mode="reverse">
+                        <label for="reverseUnits">Syringe Units</label>
+                        <input id="reverseUnits" type="number" min="1" step="0.1" value="10">
+                      </div>
+                      <div class="field mode-field">
+                        <label for="frequency">Frequency</label>
+                        <select id="frequency">
+                          <option value="daily">Daily</option>
+                          <option value="3x-weekly">3x Weekly</option>
+                          <option value="2x-weekly">2x Weekly</option>
+                          <option value="weekly" selected>Weekly</option>
+                          <option value="situational">Situational</option>
+                        </select>
+                      </div>
+                      <div class="field mode-field" data-hide-mode="manual">
+                        <label for="targetDose">Target Dose</label>
+                        <select id="targetDose"></select>
+                      </div>
+                      <div class="field mode-field is-hidden" data-show-mode="manual">
+                        <label for="manualDoseValue">Desired Dose</label>
+                        <input id="manualDoseValue" type="number" min="0.01" step="0.01" value="1">
+                      </div>
+                      <div class="field mode-field is-hidden" data-show-mode="manual">
+                        <label for="doseUnit">Dose Unit</label>
+                        <select id="doseUnit">
+                          <option value="mg" selected>mg</option>
+                          <option value="mcg">mcg</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="submode-tabs is-hidden" id="dilutionSubmodeTabs" aria-label="Dilution mode options">
+                      <button class="submode-tab is-active" type="button" data-dilution-mode="compare">Compare BAC Volumes</button>
+                      <button class="submode-tab" type="button" data-dilution-mode="solve">Solve Required BAC</button>
+                    </div>
+
+                    <p class="helper-text" id="suggestion">For cleaner 1 mg dosing on the 28G, try 2.0 mL so each dose lands near 10 units.</p>
+                    <p class="helper-text calc-status" id="calcStatus"></p>
+
+                    <div class="field is-wide">
+                      <label>Needle Size</label>
+                      <div class="needle-choices" id="needleChoices"></div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <div class="calc-panel">
+              <div class="calc-summary">
+                <div class="summary-top">
+                  <div class="summary-number">
+                    <strong>Concentration</strong>
+                    <div class="big" id="concentrationOutput">5.00 mg/mL</div>
+                    <p class="small-copy" id="doseNarrative">1 mg requires 10 units on a 28G syringe.</p>
+                  </div>
+                  <div class="needle-stage">
+                    <div class="unit-meter">
+                      <div class="unit-meter-fill" id="needleFill"></div>
+                    </div>
+                    <div class="unit-meter-scale">
+                      <span>0</span>
+                      <span id="unitMeterMid">25</span>
+                      <span id="unitMeterMax">50</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="section-kicker" id="doseGridLabel">Common Doses</div>
+                  <div class="dose-grid" id="doseCards"></div>
+                </div>
+
+                <article class="info-card is-hidden" id="dilutionCompareCard">
+                  <strong id="dilutionCompareTitle">Dilution Comparison</strong>
+                  <div class="dilution-compare" id="dilutionCompareOutput"></div>
+                </article>
+
+                <div class="info-grid">
+                  <article class="info-card">
+                    <strong>Vial Duration</strong>
+                    <p id="durationOutput">10 doses in the vial. At weekly, that covers about 10.0 weeks.</p>
+                  </article>
+                  <article class="info-card">
+                    <strong>Generated Schedule</strong>
+                    <div id="scheduleOutput" class="schedule-copy"></div>
+                  </article>
+                </div>
+
+                <article class="info-card">
+                  <strong>Dosage Build-Up Timeline</strong>
+                  <div class="timeline" id="timeline"></div>
+                </article>
+
+                <article class="info-card">
+                  <strong>Stacking Protocols</strong>
+                  <div class="stack-pills" id="stackPills"></div>
+                  <p class="small-copy" id="stackNote" style="margin-top:12px;"></p>
+                </article>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="inner">
+          <div class="section-head">
+            <div>
+              <div class="section-kicker">What You Need</div>
+              <h2>Keep The Setup Clean, Simple, And Repeatable.</h2>
+            </div>
+            <p>These cards now respond to the selected needle size and bacteriostatic water amount instead of explaining what the section might become later.</p>
+          </div>
+          <div class="supply-grid">
+            <article class="supply-card">
+              <img src="assets/icons-new/Peptide-Protocal-icons_0004_icon-Alcohol-Wipe.png" alt="Alcohol prep pads">
+              <h3>Alcohol Prep Pads</h3>
+              <p>Sanitize the vial top and keep your setup clean before every draw.</p>
+            </article>
+            <article class="supply-card">
+              <img src="assets/icons-new/Peptide-Protocal-icons_0002_icon-needle.png" alt="Needle">
+              <h3>Selected Needle</h3>
+              <p id="supplyNeedle">28G · 0.5 mL (50 units) selected for this protocol draw and unit scale.</p>
+            </article>
+            <article class="supply-card">
+              <img src="assets/icons-new/Peptide-Protocal-icons_0003_icon-Bacteriostatic-water.png" alt="Bacteriostatic water">
+              <h3>Bacteriostatic Water</h3>
+              <p id="supplyWater">2.0 mL exact volume for the current reconstitution setup.</p>
+            </article>
+            <article class="supply-card">
+              <img src="assets/icons-new/Peptide-Protocal-icons_0000_icon-sharps-container.png" alt="Sharps container">
+              <h3>Sharps Container</h3>
+              <p>Dispose of used needles safely and keep the protocol routine friction-free.</p>
+            </article>
+            <article class="supply-card">
+              <img src="assets/icons-new/Peptide-Protocal-icons_0001_icon-Refrigerator-Storage.png" alt="Refrigerator storage">
+              <h3>Refrigerator Storage</h3>
+              <p id="supplyStorage">10 mg vial should be kept chilled after mixing and handled consistently.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="download">
+        <div class="inner">
+          <div class="download-card">
+            <div class="download-copy">
+              <div class="section-kicker">Download My Protocol</div>
+              <h2 class="section-title">Save The Math, The Needle, And The Weekly Plan.</h2>
+              <p>Use the output below as your clean protocol record. Copy it, email it to yourself, or export a simple PDF to keep alongside your supplies.</p>
+              <div class="protocol-output" id="protocolOutput"></div>
+            </div>
+            <div class="download-form">
+              <form>
+                <div class="field">
+                  <label for="protocolEmail">Email My Protocol</label>
+                  <input id="protocolEmail" type="email" placeholder="Email my protocol summary">
+                </div>
+                <div class="download-actions">
+                  <button class="button button-primary button-full" id="downloadPdf" type="button">Download PDF</button>
+                  <button class="button button-secondary" id="copyProtocol" type="button">Copy Summary</button>
+                  <button class="button button-secondary" id="emailProtocol" type="button">Send By Email</button>
+                </div>
+                <p class="small-copy" id="protocolMessage"></p>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="articles">
+        <div class="inner">
+          <div class="section-head">
+            <div>
+              <div class="section-kicker">Articles</div>
+              <h2>Research Notes, Protocol Breakdowns, And Honest Field Reports.</h2>
+            </div>
+            <p>The new section now points into real supporting pages instead of isolated mockup content.</p>
+          </div>
+          <div class="articles-grid">
+            <article class="article-card">
+              <figure><img src="assets/reconstitution-feature.svg" alt="Illustrated reconstitution guide with vial, concentration, and unit draw visuals"></figure>
+              <div class="article-copy">
+                <span class="category-tab">Protocol Primer</span>
+                <h3>How To Think About Reconstitution Without Guesswork</h3>
+                <p>Use a clean relationship between vial amount, BAC water, and syringe units instead of mental math under pressure.</p>
+                <a href="reconstitution-without-guesswork.html">Read More →</a>
+              </div>
+            </article>
+            <article class="article-card">
+              <figure><img src="assets/home-hero-alt.png" alt="Healthy couple in warm outdoor light"></figure>
+              <div class="article-copy">
+                <span class="category-tab">Wellness Stack</span>
+                <h3>Why Recovery Protocols Often Pair Repair And Performance Compounds</h3>
+                <p>See how people layer recovery, energy, and body-composition support into routines that still feel sustainable.</p>
+                <a href="recovery-repair-performance-stacking.html">Read More →</a>
+              </div>
+            </article>
+            <article class="article-card">
+              <figure><img src="assets/about-hero.png" alt="Couple reviewing notes in a warm interior"></figure>
+              <div class="article-copy">
+                <span class="category-tab">Lifestyle Notes</span>
+                <h3>Storage, Scheduling, And Building Consistency Around Your Routine</h3>
+                <p>Protocol success usually lives in labels, fridge habits, timing, and the boring systems that make follow-through easy.</p>
+                <a href="storage-scheduling-routine.html">Read More →</a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="about">
+        <div class="inner">
+          <div class="about-card">
+            <img class="about-mark" src="assets/icon-coral.png" alt="Peptide Protocol icon">
+            <div>
+              <div class="section-kicker">About PeptideProtocol.ca</div>
+              <h2 class="section-title">Built By Real People Following The Details.</h2>
+              <p>PeptideProtocol.ca was built by two real people in their 40s who got tired of overpriced prescriptions and confusing medical jargon. We document our own peptide journey with honesty, track our results, and share what we learn. We are not doctors. We are not sponsored. We are just people trying to feel better and live longer and sharing everything we find along the way.</p>
+              <div class="hero-actions" style="margin-top:18px;margin-bottom:0;">
+                <a class="button button-primary" href="about.html">Open The About Page</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer-band">
+        <div class="inner footer-trust">
+          <span>Science-Backed</span>
+          <span>Precise Dosing</span>
+          <span>Protocols That Work</span>
+          <span>Your Health. Your Power.</span>
+        </div>
+      </div>
+      <div class="footer-meta">
+        <div class="inner">
+          <div>For educational and research documentation purposes only. Not medical advice. Copyright Peptide Protocol 2026. Site created and developed by <a href="https://distilldesign.ca" target="_blank" rel="noopener noreferrer">a distill design</a>.</div>
+          <div class="footer-links">
+            <a href="about.html">About</a>
+            <a href="articles.html">Articles</a>
+            <a href="#calculator">Calculator</a>
+            <a href="what-is-a-protocol.html">Protocol Guide</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

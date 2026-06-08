@@ -1,0 +1,137 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="137" y1="67" x2="1508" y2="831" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF9EF"/>
+      <stop offset="0.56" stop-color="#F6EAD4"/>
+      <stop offset="1" stop-color="#EBD8B8"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#FFFFFF" stop-opacity="0.98"/>
+      <stop offset="1" stop-color="#FFF6E9" stop-opacity="0.96"/>
+    </linearGradient>
+    <linearGradient id="coral" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#ED6037"/>
+      <stop offset="1" stop-color="#C94220"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1198 245) rotate(145.645) scale(476.27 372.557)">
+      <stop stop-color="#D94E2A" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#D94E2A" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="65" y="88" width="1470" height="728" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="24" stdDeviation="28" flood-color="#2C2416" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <rect width="1600" height="900" fill="url(#glow)"/>
+
+  <g opacity="0.14" stroke="#D94E2A" stroke-linecap="round">
+    <circle cx="1309" cy="152" r="28" stroke-width="10"/>
+    <circle cx="1389" cy="203" r="17" stroke-width="8"/>
+    <circle cx="1238" cy="238" r="18" stroke-width="8"/>
+    <circle cx="1456" cy="306" r="40" stroke-width="10"/>
+    <circle cx="1368" cy="402" r="20" stroke-width="8"/>
+    <path d="M1334 165L1373 191" stroke-width="8"/>
+    <path d="M1290 175L1248 223" stroke-width="8"/>
+    <path d="M1330 173L1423 284" stroke-width="8"/>
+    <path d="M1432 339L1380 386" stroke-width="8"/>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="92" y="112" width="1416" height="672" rx="40" fill="url(#card)"/>
+  </g>
+
+  <rect x="92" y="112" width="516" height="672" rx="40" fill="#FFFDF8"/>
+  <rect x="92" y="112" width="516" height="672" rx="40" fill="url(#glow)" opacity="0.34"/>
+
+  <text x="158" y="196" fill="#D94E2A" font-family="Arial" font-size="26" font-weight="700" letter-spacing="8">PROTOCOL PRIMER</text>
+  <text x="158" y="268" fill="#D94E2A" font-family="Arial" font-size="74" font-weight="800">RECONSTITUTION</text>
+  <text x="158" y="338" fill="#2C2416" font-family="Arial" font-size="40" font-weight="800">Without Guesswork</text>
+  <text x="158" y="404" fill="#5F5143" font-family="Arial" font-size="26" font-weight="600">Understand vial strength, BAC water,</text>
+  <text x="158" y="442" fill="#5F5143" font-family="Arial" font-size="26" font-weight="600">concentration, and unit draws at a glance.</text>
+
+  <g transform="translate(150 505)">
+    <rect width="286" height="84" rx="24" fill="#FFF3EA" stroke="#EAB49F" stroke-width="2"/>
+    <text x="32" y="34" fill="#D94E2A" font-family="Arial" font-size="20" font-weight="700" letter-spacing="4">CORE FORMULA</text>
+    <text x="32" y="62" fill="#2C2416" font-family="Arial" font-size="20" font-weight="700">Dose ÷ Concentration × Syringe Scale</text>
+  </g>
+
+  <g transform="translate(188 586)">
+    <ellipse cx="92" cy="155" rx="118" ry="22" fill="#CDB89A" opacity="0.28"/>
+    <rect x="14" y="46" width="156" height="184" rx="32" fill="#FFFFFF" stroke="#766A5A" stroke-width="4"/>
+    <rect x="38" y="0" width="108" height="48" rx="12" fill="url(#coral)"/>
+    <rect x="28" y="88" width="128" height="104" rx="14" fill="#F8F0E1"/>
+    <text x="92" y="126" text-anchor="middle" fill="#D94E2A" font-family="Arial" font-size="18" font-weight="700" letter-spacing="3">PEPTIDE</text>
+    <text x="92" y="160" text-anchor="middle" fill="#D94E2A" font-family="Arial" font-size="28" font-weight="800">15 MG</text>
+    <text x="92" y="184" text-anchor="middle" fill="#2C2416" font-family="Arial" font-size="14" font-weight="700" opacity="0.84">TOTAL IN VIAL</text>
+  </g>
+
+  <g transform="translate(664 176)">
+    <rect width="782" height="154" rx="32" fill="#FFF9F0" stroke="#EADBC4" stroke-width="3"/>
+    <text x="36" y="42" fill="#D94E2A" font-family="Arial" font-size="20" font-weight="700" letter-spacing="4">STEP 1</text>
+    <text x="36" y="84" fill="#2C2416" font-family="Arial" font-size="34" font-weight="800">Start with the vial strength you actually have.</text>
+    <text x="36" y="120" fill="#6A5B4B" font-family="Arial" font-size="22" font-weight="600">A 15 mg vial is still 15 mg whether you mix it with 1 mL or 3 mL.</text>
+    <g transform="translate(540 43)">
+      <rect width="88" height="72" rx="24" fill="#FFF2E8" stroke="#EAB49F" stroke-width="2"/>
+      <text x="44" y="44" text-anchor="middle" fill="#D94E2A" font-family="Arial" font-size="30" font-weight="800">15</text>
+      <text x="44" y="62" text-anchor="middle" fill="#2C2416" font-family="Arial" font-size="16" font-weight="700">mg</text>
+    </g>
+    <g transform="translate(642 43)">
+      <rect width="88" height="72" rx="24" fill="#FFFFFF" stroke="#EADBC4" stroke-width="2"/>
+      <text x="44" y="44" text-anchor="middle" fill="#897761" font-family="Arial" font-size="30" font-weight="800">30</text>
+      <text x="44" y="62" text-anchor="middle" fill="#2C2416" font-family="Arial" font-size="16" font-weight="700">mg</text>
+    </g>
+  </g>
+
+  <g transform="translate(664 372)">
+    <rect width="782" height="180" rx="32" fill="#FFF9F0" stroke="#EADBC4" stroke-width="3"/>
+    <text x="36" y="42" fill="#D94E2A" font-family="Arial" font-size="20" font-weight="700" letter-spacing="4">STEP 2</text>
+    <text x="36" y="84" fill="#2C2416" font-family="Arial" font-size="34" font-weight="800">BAC water sets the concentration.</text>
+    <text x="36" y="120" fill="#6A5B4B" font-family="Arial" font-size="22" font-weight="600">More water lowers the mg per mL. Less water raises it.</text>
+
+    <g transform="translate(36 140)">
+      <rect width="520" height="18" rx="9" fill="#FFFFFF"/>
+      <rect width="210" height="18" rx="9" fill="url(#coral)"/>
+      <g fill="#8B7A64" font-family="Arial" font-size="16" font-weight="700">
+        <text x="0" y="42">0.5 mL</text>
+        <text x="232" y="42">2.0 mL</text>
+        <text x="468" y="42">5.0 mL</text>
+      </g>
+    </g>
+
+    <g transform="translate(603 48)">
+      <rect width="128" height="100" rx="28" fill="#FFF3EA" stroke="#EAB49F" stroke-width="2"/>
+      <text x="64" y="48" text-anchor="middle" fill="#D94E2A" font-family="Arial" font-size="36" font-weight="800">7.5</text>
+      <text x="64" y="76" text-anchor="middle" fill="#2C2416" font-family="Arial" font-size="18" font-weight="700">mg / mL</text>
+    </g>
+  </g>
+
+  <g transform="translate(664 594)">
+    <rect width="782" height="132" rx="32" fill="#FFF9F0" stroke="#EADBC4" stroke-width="3"/>
+    <text x="36" y="42" fill="#D94E2A" font-family="Arial" font-size="20" font-weight="700" letter-spacing="4">STEP 3</text>
+    <text x="36" y="84" fill="#2C2416" font-family="Arial" font-size="34" font-weight="800">Translate the dose into units you can repeat.</text>
+
+    <g transform="translate(36 86)">
+      <rect x="106" y="8" width="470" height="26" rx="13" fill="#FFFFFF" stroke="#D8C9B4" stroke-width="3"/>
+      <rect x="106" y="8" width="164" height="26" rx="13" fill="url(#coral)"/>
+      <rect x="62" y="15" width="48" height="12" rx="6" fill="#EFE3D1"/>
+      <rect x="579" y="2" width="30" height="38" rx="11" fill="#EFE3D1" stroke="#D8C9B4" stroke-width="3"/>
+      <g stroke="#7D715F" stroke-width="2">
+        <path d="M134 8V34"/>
+        <path d="M170 8V34"/>
+        <path d="M206 8V34"/>
+        <path d="M242 8V34"/>
+        <path d="M278 8V34"/>
+        <path d="M314 8V34"/>
+        <path d="M350 8V34"/>
+        <path d="M386 8V34"/>
+        <path d="M422 8V34"/>
+        <path d="M458 8V34"/>
+        <path d="M494 8V34"/>
+        <path d="M530 8V34"/>
+      </g>
+      <text x="0" y="28" fill="#2C2416" font-family="Arial" font-size="18" font-weight="700">Syringe</text>
+      <text x="648" y="30" fill="#D94E2A" font-family="Arial" font-size="28" font-weight="800">20 units</text>
+    </g>
+  </g>
+</svg>

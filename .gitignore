@@ -1,0 +1,11 @@
+.DS_Store
+.env
+.env.local
+.env.production
+.env.siteground
+.deploy.env
+comp/
+transfer/
+launch-package/
+launch-package-clean-2/
+*.zip

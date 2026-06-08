@@ -1,0 +1,42 @@
+name: Deploy to SiteGround
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Start SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SITEGROUND_SSH_PRIVATE_KEY }}
+
+      - name: Add SiteGround host key
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p "${{ secrets.SITEGROUND_SSH_PORT }}" "${{ secrets.SITEGROUND_SSH_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Sync site files
+        run: |
+          rsync -avz --delete \
+            --exclude ".git/" \
+            --exclude ".github/" \
+            --exclude ".DS_Store" \
+            --exclude ".env" \
+            --exclude ".env.example" \
+            --exclude "DEPLOYMENT.md" \
+            --exclude "comp/" \
+            --exclude "transfer/" \
+            --exclude "launch-package/" \
+            --exclude "launch-package-clean-2/" \
+            --exclude "peptideprotocol-launch.zip" \
+            --exclude "peptideprotocol-launch-clean-2.zip" \
+            -e "ssh -p ${{ secrets.SITEGROUND_SSH_PORT }}" \
+            ./ "${{ secrets.SITEGROUND_SSH_USER }}@${{ secrets.SITEGROUND_SSH_HOST }}:${{ secrets.SITEGROUND_REMOTE_PATH }}"
