@@ -49,6 +49,7 @@ Add these repository secrets before enabling auto-deploy:
 - `SITEGROUND_SSH_PORT`
 - `SITEGROUND_SSH_USER`
 - `SITEGROUND_SSH_PRIVATE_KEY`
+- `SITEGROUND_SSH_PASSPHRASE`
 - `SITEGROUND_REMOTE_PATH`
 
 ## What the workflow deploys
