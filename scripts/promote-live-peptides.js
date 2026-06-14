@@ -32,7 +32,8 @@ function promoteIndex() {
     .replace(/href="\.\.\/styles\/site\.css/g, 'href="styles/site.css')
     .replace(/href="draft\.css"/g, 'href="drafts/draft.css"')
     .replace(/src="\.\.\/scripts\/site\.js/g, 'src="scripts/site.js')
-    .replace(/src="draft\.js"/g, 'src="drafts/draft.js"');
+    .replace(/src="draft\.js"/g, 'src="drafts/draft.js"')
+    .replace(/<a class="brand" href="index\.html"/g, '<a class="brand" href="/"');
   writeFile(path.join(root, "peptides.html"), html);
 }
 
@@ -53,7 +54,8 @@ function promotePeptideFiles() {
       .replace(/href="\.\.\/\.\.\/([^"]+\.html)"/g, 'href="../$1"')
       .replace(/href="\.\.\/\.\.\/assets\/New price list\.pdf"/g, 'href="../index.html#download"')
       .replace(/content="\.\.\/\.\.\/assets\//g, 'content="../assets/')
-      .replace(/url\('\.\.\/\.\.\/assets\//g, "url('../assets/");
+      .replace(/url\('\.\.\/\.\.\/assets\//g, "url('../assets/")
+      .replace(/<a class="brand" href="\.\.\/index\.html"/g, '<a class="brand" href="/"');
     writeFile(path.join(livePeptidesDir, file), html);
   });
 }
