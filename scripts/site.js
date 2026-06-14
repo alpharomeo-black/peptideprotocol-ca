@@ -237,8 +237,8 @@
         if (!constantContactConfig.endpoint) {
           if (message) {
             message.textContent = firstName
-              ? "Thanks, " + firstName + ". You're on our update list for new profiles, calculator updates, articles, PDFs, and product notes."
-              : "Thanks. You're on our update list for new profiles, calculator updates, articles, PDFs, and product notes.";
+              ? "Thanks, " + firstName + ". The signup form is installed and the secure email-list connection is being activated."
+              : "Thanks. The signup form is installed and the secure email-list connection is being activated.";
           }
           return;
         }
