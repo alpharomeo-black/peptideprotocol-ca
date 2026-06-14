@@ -1,5 +1,10 @@
 (function () {
-  var doseOptions = [0.25, 0.5, 1, 1.5, 2, 2.5, 5];
+  var constantContactConfig = {
+    listId: "df2d5dd0-6779-11f1-99dc-02420a320003",
+    endpoint: ""
+  };
+
+  var doseOptions = [0.25, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 5, 6, 7, 8, 9, 10, 12];
   var needles = [
     { id: "28g", label: "28G", unitsPerMl: 50, volume: "0.5 mL (50 units)" },
     { id: "29g", label: "29G", unitsPerMl: 100, volume: "1 mL (100 units)" },
@@ -201,16 +206,50 @@
     });
   }
 
+  function initSignupForms() {
+    var forms = Array.prototype.slice.call(document.querySelectorAll("[data-cc-signup-form]"));
+    if (!forms.length) return;
+
+    forms.forEach(function (form) {
+      var emailField = form.querySelector('input[name="email"]');
+      var firstNameField = form.querySelector('input[name="firstName"]');
+      var message = form.querySelector("[data-signup-message]");
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        var email = ((emailField && emailField.value) || "").trim();
+        var firstName = ((firstNameField && firstNameField.value) || "").trim();
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          if (message) message.textContent = "Enter a valid email address to continue.";
+          return;
+        }
+
+        if (!constantContactConfig.endpoint) {
+          if (message) {
+            message.textContent = firstName
+              ? "Thanks, " + firstName + ". The Peptide Protocol Subscribers list is ready in Constant Contact. This local signup block is installed and waiting for the secure live submission endpoint."
+              : "Thanks. The Peptide Protocol Subscribers list is ready in Constant Contact. This local signup block is installed and waiting for the secure live submission endpoint.";
+          }
+          return;
+        }
+      });
+    });
+  }
+
   function initCalculator() {
     var form = document.getElementById("calculatorForm");
     if (!form) return;
 
     var compareBacOptions = [0.5, 1, 1.5, 2, 2.5, 3, 5, 8, 10];
-    var expandedPresetSizes = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 80, 100, 150, 250, 500];
+    var expandedPresetSizes = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 80, 100, 150, 250, 500, 1000];
     var state = {
       mode: "standard",
       dilutionMode: "compare",
-      selectedNeedle: needles[0]
+      selectedNeedle: needles[0],
+      selectedPresetSize: 10,
+      latestSummary: null
     };
 
     var peptideSelect = document.getElementById("peptide");
@@ -255,8 +294,8 @@
     var dilutionCompareCard = document.getElementById("dilutionCompareCard");
     var dilutionCompareTitle = document.getElementById("dilutionCompareTitle");
     var dilutionCompareOutput = document.getElementById("dilutionCompareOutput");
-    var unitMeterMid = document.getElementById("unitMeterMid");
-    var unitMeterMax = document.getElementById("unitMeterMax");
+    var unitMeter = document.querySelector(".unit-meter");
+    var unitMeterScale = document.getElementById("unitMeterScale");
     var emailInput = document.getElementById("protocolEmail");
     var emailButton = document.getElementById("emailProtocol");
     var copyButton = document.getElementById("copyProtocol");
@@ -271,9 +310,10 @@
         return '<option value="' + value + '">' + formatDose(value) + ' mg</option>';
       }).join("");
       peptideSelect.value = "Retatrutide";
-      targetDoseSelect.value = "1";
+      targetDoseSelect.value = "2";
       vialSize.value = "10";
       peptideAmount.value = "10";
+      state.selectedPresetSize = 10;
     }
 
     function renderNeedles() {
@@ -299,21 +339,38 @@
     }
 
     function presetSizesForPeptide(peptide) {
-      return expandedPresetSizes.filter(function (size) {
-        return size >= Math.min.apply(null, peptide.sizes);
-      }).filter(function (size, index, all) {
-        return all.indexOf(size) === index;
-      });
+      return peptide.sizes
+        .concat(expandedPresetSizes)
+        .filter(function (size, index, all) {
+          return all.indexOf(size) === index;
+        })
+        .sort(function (a, b) { return a - b; });
     }
 
-    function renderSizes(peptide) {
+    function renderSizes(peptide, preferredSize) {
       var presets = presetSizesForPeptide(peptide);
-      vialSize.innerHTML = presets.map(function (size) {
-        return '<option value="' + size + '">' + formatDose(size) + ' mg</option>';
-      }).join("");
-      if (!presets.includes(Number(vialSize.value))) {
-        vialSize.value = String(peptide.sizes[0]);
+      var selectedValue = Number(preferredSize);
+      if (!isFinite(selectedValue) || selectedValue <= 0) {
+        selectedValue = Number(peptideAmount.value) || Number(vialSize.value) || peptide.sizes[0];
       }
+
+      var options = presets.slice();
+      if (options.indexOf(selectedValue) === -1 && isFinite(selectedValue) && selectedValue > 0) {
+        options.unshift(selectedValue);
+      }
+
+      if (options.indexOf(selectedValue) === -1) selectedValue = peptide.sizes[0];
+
+      vialSize.innerHTML = options.map(function (size, index) {
+        var label = formatDose(size) + " mg";
+        if (index === 0 && presets.indexOf(size) === -1) {
+          label = "Custom · " + label;
+        }
+        return '<option value="' + size + '">' + label + '</option>';
+      }).join("");
+
+      vialSize.value = String(selectedValue);
+      state.selectedPresetSize = selectedValue;
     }
 
     function frequencyInfo() {
@@ -394,6 +451,12 @@
       };
     }
 
+    function recommendedNeedleForVolume(volumeMl) {
+      if (volumeMl <= 0.5) return needles[0];
+      if (volumeMl <= 1) return needles[2];
+      return needles[1];
+    }
+
     function solveBacForUnits(peptideMg, targetDoseMg, desiredUnits) {
       var targetMl = unitsToVolume(desiredUnits);
       return peptideMg / (targetDoseMg / targetMl);
@@ -407,12 +470,13 @@
     }
 
     function buildProtocolText(summary) {
+      var needleText = summary.needleLabel || (state.selectedNeedle.label + " " + state.selectedNeedle.volume);
       var lines = [
         "Protocol Summary",
         "Mode: " + summary.modeLabel,
         "Peptide: " + summary.peptideLabel,
         "Peptide Amount: " + formatDose(summary.peptideMg) + " mg",
-        "Needle: " + state.selectedNeedle.label + " " + state.selectedNeedle.volume,
+        "Needle: " + needleText,
         "Concentration: " + summary.concentration.toFixed(2) + " mg/mL"
       ];
 
@@ -430,17 +494,120 @@
       return lines.join("\n");
     }
 
+    function protocolRows(summary) {
+      var needleText = summary.needleLabel || (state.selectedNeedle.label + " " + state.selectedNeedle.volume);
+      var rows = [
+        ["Mode", summary.modeLabel],
+        ["Peptide", summary.peptideLabel],
+        ["Peptide Amount", formatDose(summary.peptideMg) + " mg"],
+        ["Needle", needleText],
+        ["Concentration", summary.concentration.toFixed(2) + " mg/mL"]
+      ];
+
+      if (typeof summary.bacMl === "number" && isFinite(summary.bacMl)) {
+        rows.push(["BAC Water", summary.bacMl.toFixed(2) + " mL"]);
+      }
+
+      summary.detailLines.forEach(function (line) {
+        var split = line.split(/:\s(.+)/);
+        if (split.length >= 3) {
+          rows.push([split[0], split[1]]);
+        } else {
+          rows.push(["Detail", line]);
+        }
+      });
+
+      if (summary.durationText) rows.push(["Duration", summary.durationText]);
+      if (summary.scheduleItems && summary.scheduleItems.length) rows.push(["Schedule", summary.scheduleItems.join(" • ")]);
+      if (summary.metaLines && summary.metaLines.length) {
+        summary.metaLines.forEach(function (line) {
+          var split = line.split(/:\s(.+)/);
+          if (split.length >= 3) {
+            rows.push([split[0], split[1]]);
+          } else {
+            rows.push(["Notes", line]);
+          }
+        });
+      }
+
+      return rows;
+    }
+
+    function doseReferenceRows(concentration) {
+      return doseOptions.map(function (dose) {
+        var volumeMl = dose / concentration;
+        var units = volumeToUnits(volumeMl);
+        var needle = recommendedNeedleForVolume(volumeMl);
+        var schedule = frequencyInfo();
+        var weeks = schedule.dosesPerWeek ? (Math.max(Number(peptideAmount.value) || 0, 0.01) / dose) / schedule.dosesPerWeek : null;
+        return {
+          dose: formatDose(dose) + " mg",
+          units: cleanUnits(units) + " units",
+          volume: volumeMl.toFixed(3) + " mL",
+          needle: needle.label + " · " + needle.volume,
+          duration: weeks === null ? "Variable schedule" : weeks.toFixed(1) + " weeks"
+        };
+      });
+    }
+
+    function loadImageDataUrl(src) {
+      return new Promise(function (resolve, reject) {
+        var image = new Image();
+        image.crossOrigin = "anonymous";
+        image.onload = function () {
+          try {
+            var canvas = document.createElement("canvas");
+            canvas.width = image.naturalWidth;
+            canvas.height = image.naturalHeight;
+            var context = canvas.getContext("2d");
+            context.drawImage(image, 0, 0);
+            resolve(canvas.toDataURL("image/png"));
+          } catch (error) {
+            reject(error);
+          }
+        };
+        image.onerror = reject;
+        image.src = src;
+      });
+    }
+
     function renderDoseCards(concentration, activeDose) {
       doseCards.innerHTML = doseOptions.map(function (dose) {
         var volumeMl = dose / concentration;
         var units = volumeToUnits(volumeMl);
+        var needle = recommendedNeedleForVolume(volumeMl);
+        var schedule = frequencyInfo();
+        var weeks = schedule.dosesPerWeek ? (Math.max(Number(peptideAmount.value) || 0, 0.01) / dose) / schedule.dosesPerWeek : null;
         return '' +
           '<div class="dose-card' + (dose === activeDose ? ' is-active' : '') + '">' +
             '<strong>' + formatDose(dose) + ' mg</strong>' +
             '<div class="value">' + units.toFixed(1).replace(/\.0$/, "") + '</div>' +
             '<span>units</span>' +
-            '<p>' + volumeMl.toFixed(3) + ' mL · ' + state.selectedNeedle.label + '</p>' +
+            '<p>' + volumeMl.toFixed(3) + ' mL · ' + needle.label + ' recommended<br>' + (weeks === null ? 'Variable schedule' : weeks.toFixed(1) + ' weeks at current frequency') + '</p>' +
           '</div>';
+      }).join("");
+    }
+
+    function renderUnitMeterScale() {
+      if (!unitMeter || !unitMeterScale) return;
+
+      var maxUnits = state.selectedNeedle.unitsPerMl;
+      var labelStep = 5;
+      var labels = [];
+
+      for (var value = 0; value <= maxUnits; value += labelStep) {
+        labels.push(value);
+      }
+
+      if (labels[labels.length - 1] !== maxUnits) {
+        labels.push(maxUnits);
+      }
+
+      unitMeter.style.setProperty("--meter-divisions", String(maxUnits));
+      unitMeter.style.setProperty("--meter-major-step", String(labelStep));
+      unitMeterScale.style.gridTemplateColumns = "repeat(" + labels.length + ", minmax(0, 1fr))";
+      unitMeterScale.innerHTML = labels.map(function (value) {
+        return '<span>' + value + '</span>';
       }).join("");
     }
 
@@ -448,8 +615,7 @@
       if (!needleFill) return;
       var fillPercent = Math.max(0, Math.min(100, (units / state.selectedNeedle.unitsPerMl) * 100));
       needleFill.style.width = Math.max(fillPercent, units > 0 ? 10 : 0) + "%";
-      if (unitMeterMid) unitMeterMid.textContent = String(state.selectedNeedle.unitsPerMl / 2);
-      if (unitMeterMax) unitMeterMax.textContent = String(state.selectedNeedle.unitsPerMl);
+      renderUnitMeterScale();
     }
 
     function setModeVisibility() {
@@ -471,7 +637,7 @@
       });
 
       dilutionSubmodeTabs.classList.toggle("is-hidden", state.mode !== "dilution");
-      dilutionCompareCard.classList.toggle("is-hidden", state.mode !== "dilution");
+      dilutionCompareCard.classList.remove("is-hidden");
     }
 
     function renderKnownPeptideInfo(peptide) {
@@ -501,8 +667,8 @@
       stackNote.textContent = "Database-backed half-life, range, and stack guidance are unavailable in manual mode, so use your own protocol notes alongside the calculator output.";
     }
 
-    function renderDilutionCompare(peptideMg, targetDoseMg) {
-      var options = compareBacOptions
+    function buildDilutionOptions(peptideMg, targetDoseMg) {
+      return compareBacOptions
         .map(function (bacMl) {
           var concentration = calculateConcentration(peptideMg, bacMl);
           var result = computeDoseFromConcentration(targetDoseMg, concentration);
@@ -520,17 +686,22 @@
         .sort(function (a, b) {
           return a.cleanScore - b.cleanScore || a.units - b.units;
         });
+    }
 
+    function renderComparisonTable(title, peptideMg, targetDoseMg, currentBacMl) {
+      var options = buildDilutionOptions(peptideMg, targetDoseMg);
       var best = options[0] || null;
-      dilutionCompareTitle.textContent = "Dilution Comparison";
+
+      dilutionCompareTitle.textContent = title;
       if (!best) {
         dilutionCompareOutput.innerHTML = "<p>No clean BAC comparison is available for this setup on the selected syringe scale.</p>";
         return null;
       }
 
       dilutionCompareOutput.innerHTML = options.slice(0, 4).map(function (option, index) {
+        var isCurrent = typeof currentBacMl === "number" && Math.abs(option.bacMl - currentBacMl) < 0.01;
         return '' +
-          '<div class="dilution-option' + (index === 0 ? ' is-best' : '') + '">' +
+          '<div class="dilution-option' + (index === 0 ? ' is-best' : '') + (isCurrent ? ' is-current' : '') + '">' +
             '<div><strong>BAC Water</strong><span>' + option.bacMl.toFixed(1) + ' mL</span></div>' +
             '<div><strong>Concentration</strong><span>' + option.concentration.toFixed(2) + ' mg/mL</span></div>' +
             '<div><strong>Target Draw</strong><span>' + cleanUnits(option.units) + ' units</span></div>' +
@@ -539,6 +710,17 @@
       }).join("");
 
       return best;
+    }
+
+    function renderSolveResultCard(concentration, bacMl, activeUnits, activeVolumeMl) {
+      dilutionCompareTitle.textContent = "Required BAC Water";
+      dilutionCompareOutput.innerHTML = '' +
+        '<div class="dilution-option is-best is-current">' +
+          '<div><strong>Required BAC</strong><span>' + bacMl.toFixed(2) + ' mL</span></div>' +
+          '<div><strong>Concentration</strong><span>' + concentration.toFixed(2) + ' mg/mL</span></div>' +
+          '<div><strong>Target Draw</strong><span>' + cleanUnits(activeUnits) + ' units</span></div>' +
+          '<div><strong>Volume</strong><span>' + activeVolumeMl.toFixed(3) + ' mL</span></div>' +
+        '</div>';
     }
 
     function resetCommonOutputs() {
@@ -565,7 +747,7 @@
       var activeVolumeMl;
       var durationText = "";
 
-      renderSizes(peptide);
+      renderSizes(peptide, state.selectedPresetSize || peptideMg);
       setModeVisibility();
 
       vialLabel.textContent = peptideLabel;
@@ -593,21 +775,27 @@
         activeDoseMg = targetMg;
         activeVolumeMl = activeDoseMg / concentration;
         activeUnits = volumeToUnits(activeVolumeMl);
+        var standardNeedle = recommendedNeedleForVolume(activeVolumeMl);
         durationText = describeDuration(peptideMg / activeDoseMg, schedule);
-        suggestion.textContent = smartSuggestion(peptideMg, activeDoseMg, bacMl);
+        suggestion.textContent = smartSuggestion(peptideMg, activeDoseMg, bacMl) + " Clinical trials started at 2 mg and increased every 4 weeks. Most people find their optimal dose between 6-8 mg.";
         doseGridLabel.textContent = "Common Doses";
-        dilutionCompareOutput.innerHTML = "";
+        renderComparisonTable("BAC Comparison For " + formatDose(activeDoseMg) + " mg", peptideMg, activeDoseMg, bacMl);
         summary = {
           modeLabel: "Standard Mode",
           peptideLabel: peptide.name,
+          needleLabel: standardNeedle.label + " " + standardNeedle.volume,
           peptideMg: peptideMg,
           bacMl: bacMl,
           concentration: concentration,
+          activeDoseMg: activeDoseMg,
+          activeUnits: activeUnits,
+          activeVolumeMl: activeVolumeMl,
           durationText: durationText,
           scheduleItems: schedule.schedule,
           detailLines: [
             "Target Dose: " + formatDose(activeDoseMg) + " mg",
-            "Target Draw: " + cleanUnits(activeUnits) + " units (" + activeVolumeMl.toFixed(3) + " mL)"
+            "Target Draw: " + cleanUnits(activeUnits) + " units (" + activeVolumeMl.toFixed(3) + " mL)",
+            "Recommended Needle: " + standardNeedle.label + " " + standardNeedle.volume
           ],
           metaLines: [
             "Half Life: " + peptide.halfLife,
@@ -632,22 +820,28 @@
         var reverseResult = computeDoseFromUnits(activeUnits, concentration);
         activeDoseMg = reverseResult.doseMg;
         activeVolumeMl = reverseResult.volumeMl;
+        var reverseNeedle = recommendedNeedleForVolume(activeVolumeMl);
         durationText = describeDuration(peptideMg / Math.max(activeDoseMg, 0.0001), schedule);
-        suggestion.textContent = cleanUnits(activeUnits) + " units on the " + state.selectedNeedle.label + " delivers " + activeDoseMg.toFixed(3).replace(/0+$/, "").replace(/\.$/, "") + " mg (" + Math.round(reverseResult.doseMcg) + " mcg).";
+        suggestion.textContent = cleanUnits(activeUnits) + " units on the " + state.selectedNeedle.label + " delivers " + activeDoseMg.toFixed(3).replace(/0+$/, "").replace(/\.$/, "") + " mg (" + Math.round(reverseResult.doseMcg) + " mcg). Clinical trials started at 2 mg and increased every 4 weeks. Most people find their optimal dose between 6-8 mg.";
         doseGridLabel.textContent = "Common Doses At This Concentration";
-        dilutionCompareOutput.innerHTML = "";
+        renderComparisonTable("BAC Comparison For " + formatDose(Number(activeDoseMg.toFixed(3))) + " mg", peptideMg, activeDoseMg, bacMl);
         summary = {
           modeLabel: "Reverse Mode",
           peptideLabel: peptide.name,
+          needleLabel: reverseNeedle.label + " " + reverseNeedle.volume,
           peptideMg: peptideMg,
           bacMl: bacMl,
           concentration: concentration,
+          activeDoseMg: activeDoseMg,
+          activeUnits: activeUnits,
+          activeVolumeMl: activeVolumeMl,
           durationText: durationText,
           scheduleItems: schedule.schedule,
           detailLines: [
             "Reverse Input: " + cleanUnits(activeUnits) + " units",
             "Delivered Dose: " + activeDoseMg.toFixed(3).replace(/0+$/, "").replace(/\.$/, "") + " mg (" + Math.round(reverseResult.doseMcg) + " mcg)",
-            "Draw Volume: " + activeVolumeMl.toFixed(3) + " mL"
+            "Draw Volume: " + activeVolumeMl.toFixed(3) + " mL",
+            "Recommended Needle: " + reverseNeedle.label + " " + reverseNeedle.volume
           ],
           metaLines: [
             "Half Life: " + peptide.halfLife,
@@ -658,7 +852,7 @@
       } else if (state.mode === "dilution") {
         activeDoseMg = targetMg;
         if (state.dilutionMode === "compare") {
-          var best = renderDilutionCompare(peptideMg, activeDoseMg);
+          var best = renderComparisonTable("Dilution Comparison", peptideMg, activeDoseMg);
           if (!best) {
             calcStatus.textContent = "Try a different peptide amount or dose target to generate a cleaner dilution comparison.";
             return;
@@ -667,21 +861,27 @@
           bacMl = best.bacMl;
           activeUnits = best.units;
           activeVolumeMl = best.volumeMl;
+          var compareNeedle = recommendedNeedleForVolume(activeVolumeMl);
           durationText = describeDuration(peptideMg / activeDoseMg, schedule);
-          suggestion.textContent = "The cleanest comparison result uses " + bacMl.toFixed(1) + " mL BAC water and lands near " + cleanUnits(activeUnits) + " units.";
+          suggestion.textContent = "The cleanest comparison result uses " + bacMl.toFixed(1) + " mL BAC water and lands near " + cleanUnits(activeUnits) + " units. Clinical trials started at 2 mg and increased every 4 weeks. Most people find their optimal dose between 6-8 mg.";
           doseGridLabel.textContent = "Common Doses Using Best BAC Match";
           summary = {
             modeLabel: "Dilution Mode · Compare BAC Volumes",
             peptideLabel: peptide.name,
+            needleLabel: compareNeedle.label + " " + compareNeedle.volume,
             peptideMg: peptideMg,
             bacMl: bacMl,
             concentration: concentration,
+            activeDoseMg: activeDoseMg,
+            activeUnits: activeUnits,
+            activeVolumeMl: activeVolumeMl,
             durationText: durationText,
             scheduleItems: schedule.schedule,
             detailLines: [
               "Target Dose: " + formatDose(activeDoseMg) + " mg",
               "Best BAC Match: " + bacMl.toFixed(2) + " mL",
-              "Target Draw: " + cleanUnits(activeUnits) + " units (" + activeVolumeMl.toFixed(3) + " mL)"
+              "Target Draw: " + cleanUnits(activeUnits) + " units (" + activeVolumeMl.toFixed(3) + " mL)",
+              "Recommended Needle: " + compareNeedle.label + " " + compareNeedle.volume
             ],
             metaLines: [
               "Half Life: " + peptide.halfLife,
@@ -701,32 +901,31 @@
           concentration = calculateConcentration(peptideMg, bacMl);
           activeUnits = desiredUnitsValue;
           activeVolumeMl = unitsToVolume(activeUnits);
+          var solveNeedle = recommendedNeedleForVolume(activeVolumeMl);
           durationText = describeDuration(peptideMg / activeDoseMg, schedule);
-          dilutionCompareTitle.textContent = "Required BAC Water";
-          dilutionCompareOutput.innerHTML = '' +
-            '<div class="dilution-option is-best">' +
-              '<div><strong>Required BAC</strong><span>' + bacMl.toFixed(2) + ' mL</span></div>' +
-              '<div><strong>Concentration</strong><span>' + concentration.toFixed(2) + ' mg/mL</span></div>' +
-              '<div><strong>Target Draw</strong><span>' + cleanUnits(activeUnits) + ' units</span></div>' +
-              '<div><strong>Volume</strong><span>' + activeVolumeMl.toFixed(3) + ' mL</span></div>' +
-            '</div>';
+          renderSolveResultCard(concentration, bacMl, activeUnits, activeVolumeMl);
           if (bacMl < 0.2 || bacMl > 10) {
             calcStatus.textContent = "The solved BAC amount is mathematically valid, but it may be impractical in a real vial. Double-check the target dose and unit goal.";
           }
-          suggestion.textContent = "To make " + formatDose(activeDoseMg) + " mg equal " + cleanUnits(activeUnits) + " units, reconstitute with " + bacMl.toFixed(2) + " mL BAC water.";
+          suggestion.textContent = "To make " + formatDose(activeDoseMg) + " mg equal " + cleanUnits(activeUnits) + " units, reconstitute with " + bacMl.toFixed(2) + " mL BAC water. Clinical trials started at 2 mg and increased every 4 weeks. Most people find their optimal dose between 6-8 mg.";
           doseGridLabel.textContent = "Common Doses Using Solved BAC";
           summary = {
             modeLabel: "Dilution Mode · Solve Required BAC",
             peptideLabel: peptide.name,
+            needleLabel: solveNeedle.label + " " + solveNeedle.volume,
             peptideMg: peptideMg,
             bacMl: bacMl,
             concentration: concentration,
+            activeDoseMg: activeDoseMg,
+            activeUnits: activeUnits,
+            activeVolumeMl: activeVolumeMl,
             durationText: durationText,
             scheduleItems: schedule.schedule,
             detailLines: [
               "Target Dose: " + formatDose(activeDoseMg) + " mg",
               "Desired Draw: " + cleanUnits(activeUnits) + " units",
-              "Required BAC Water: " + bacMl.toFixed(2) + " mL"
+              "Required BAC Water: " + bacMl.toFixed(2) + " mL",
+              "Recommended Needle: " + solveNeedle.label + " " + solveNeedle.volume
             ],
             metaLines: [
               "Half Life: " + peptide.halfLife,
@@ -748,23 +947,29 @@
         activeDoseMg = manualDoseMg;
         activeVolumeMl = activeDoseMg / concentration;
         activeUnits = volumeToUnits(activeVolumeMl);
+        var manualNeedle = recommendedNeedleForVolume(activeVolumeMl);
         durationText = describeDuration(peptideMg / activeDoseMg, schedule);
         suggestion.textContent = doseUnit.value === "mcg"
-          ? Number(manualDoseValue.value || 0) + " mcg requires " + cleanUnits(activeUnits) + " units on the " + state.selectedNeedle.label + "."
-          : formatDose(activeDoseMg) + " mg requires " + cleanUnits(activeUnits) + " units on the " + state.selectedNeedle.label + ".";
+          ? Number(manualDoseValue.value || 0) + " mcg requires " + cleanUnits(activeUnits) + " units on the " + state.selectedNeedle.label + ". Clinical trials started at 2 mg and increased every 4 weeks. Most people find their optimal dose between 6-8 mg."
+          : formatDose(activeDoseMg) + " mg requires " + cleanUnits(activeUnits) + " units on the " + state.selectedNeedle.label + ". Clinical trials started at 2 mg and increased every 4 weeks. Most people find their optimal dose between 6-8 mg.";
         doseGridLabel.textContent = "Common Doses At This Concentration";
-        dilutionCompareOutput.innerHTML = "";
+        renderComparisonTable("BAC Comparison For Manual Dose", peptideMg, activeDoseMg, bacMl);
         summary = {
           modeLabel: "Manual Mode",
           peptideLabel: peptideLabel,
+          needleLabel: manualNeedle.label + " " + manualNeedle.volume,
           peptideMg: peptideMg,
           bacMl: bacMl,
           concentration: concentration,
+          activeDoseMg: activeDoseMg,
+          activeUnits: activeUnits,
+          activeVolumeMl: activeVolumeMl,
           durationText: durationText,
           scheduleItems: schedule.schedule,
           detailLines: [
             "Manual Dose: " + Number(manualDoseValue.value || 0) + " " + doseUnit.value,
-            "Target Draw: " + cleanUnits(activeUnits) + " units (" + activeVolumeMl.toFixed(3) + " mL)"
+            "Target Draw: " + cleanUnits(activeUnits) + " units (" + activeVolumeMl.toFixed(3) + " mL)",
+            "Recommended Needle: " + manualNeedle.label + " " + manualNeedle.volume
           ],
           metaLines: [
             "Manual mode note: Database-backed half-life, range, and stack data are not available for custom entries."
@@ -773,10 +978,11 @@
       }
 
       concentrationOutput.textContent = concentration.toFixed(2) + " mg/mL";
+      var activeNeedle = recommendedNeedleForVolume(activeVolumeMl);
       if (state.mode === "reverse") {
-        doseNarrative.textContent = cleanUnits(activeUnits) + " units delivers " + activeDoseMg.toFixed(3).replace(/0+$/, "").replace(/\.$/, "") + " mg on a " + state.selectedNeedle.label + " syringe.";
+        doseNarrative.textContent = cleanUnits(activeUnits) + " units delivers " + activeDoseMg.toFixed(3).replace(/0+$/, "").replace(/\.$/, "") + " mg on a " + activeNeedle.label + " syringe.";
       } else {
-        doseNarrative.textContent = formatDose(activeDoseMg) + " mg requires " + cleanUnits(activeUnits) + " units on a " + state.selectedNeedle.label + " syringe.";
+        doseNarrative.textContent = formatDose(activeDoseMg) + " mg requires " + cleanUnits(activeUnits) + " units on a " + activeNeedle.label + " syringe.";
       }
       durationOutput.textContent = durationText;
       scheduleOutput.innerHTML = buildScheduleList(schedule.schedule);
@@ -785,9 +991,10 @@
       }, doseOptions[0]));
       setNeedleFill(activeUnits);
 
-      supplyNeedle.textContent = state.selectedNeedle.label + " · " + state.selectedNeedle.volume + " selected for this protocol draw and unit scale.";
+      supplyNeedle.textContent = activeNeedle.label + " · " + activeNeedle.volume + " is the most appropriate draw size for this volume.";
       supplyWater.textContent = bacMl.toFixed(1) + " mL exact volume for the current reconstitution setup.";
       supplyStorage.textContent = formatDose(peptideMg) + " mg vial should be kept chilled after mixing and handled consistently.";
+      state.latestSummary = summary;
       protocolOutput.textContent = buildProtocolText(summary);
     }
 
@@ -805,12 +1012,19 @@
       });
     });
 
-    peptideSelect.addEventListener("change", updateCalculator);
+    peptideSelect.addEventListener("change", function () {
+      state.selectedPresetSize = Number(peptideAmount.value) || null;
+      updateCalculator();
+    });
     vialSize.addEventListener("change", function () {
+      state.selectedPresetSize = Number(vialSize.value) || null;
       peptideAmount.value = vialSize.value;
       updateCalculator();
     });
-    peptideAmount.addEventListener("input", updateCalculator);
+    peptideAmount.addEventListener("input", function () {
+      state.selectedPresetSize = Number(peptideAmount.value) || null;
+      updateCalculator();
+    });
     bacWater.addEventListener("input", updateCalculator);
     frequency.addEventListener("change", updateCalculator);
     targetDoseSelect.addEventListener("change", updateCalculator);
@@ -842,27 +1056,115 @@
     }
 
     if (pdfButton) {
-      pdfButton.addEventListener("click", function () {
+      pdfButton.addEventListener("click", async function () {
         if (!window.jspdf || !window.jspdf.jsPDF) {
           if (message) message.textContent = "PDF export is not available right now because the library did not finish loading.";
           return;
         }
+        if (!state.latestSummary) {
+          if (message) message.textContent = "Run a calculation first so there is a protocol summary to export.";
+          return;
+        }
+
+        var summary = state.latestSummary;
         var doc = new window.jspdf.jsPDF({ unit: "pt", format: "letter" });
-        var lines = protocolOutput.textContent.split("\n");
+        var pageWidth = doc.internal.pageSize.getWidth();
+        var pageHeight = doc.internal.pageSize.getHeight();
+        var margin = 40;
+        var contentWidth = pageWidth - (margin * 2);
+        var tableRows = protocolRows(summary).map(function (row) {
+          return {
+            label: row[0],
+            lines: doc.splitTextToSize(row[1], contentWidth - 188)
+          };
+        });
+        var referenceRows = doseReferenceRows(summary.concentration);
+        var y = 34;
+
+        try {
+          var logoData = await loadImageDataUrl("assets/logo-coral.png");
+          doc.addImage(logoData, "PNG", margin, y, 150, 48);
+        } catch (error) {
+          doc.setTextColor(217, 78, 42);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(22);
+          doc.text("PEPTIDE PROTOCOL", margin, y + 28);
+        }
+
+        doc.setTextColor(44, 36, 22);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(17);
+        doc.text("Protocol Summary", margin, y + 78);
+
+        y += 92;
+        var tableHeight = 24;
+        tableRows.forEach(function (row) {
+          tableHeight += Math.max(22, row.lines.length * 12 + 10);
+        });
+        doc.setDrawColor(230, 220, 199);
+        doc.setFillColor(255, 251, 244);
+        doc.roundedRect(margin, y, contentWidth, tableHeight, 10, 10, "FD");
         doc.setFillColor(217, 78, 42);
-        doc.rect(32, 28, 548, 48, "F");
+        doc.roundedRect(margin, y, contentWidth, 24, 10, 10, "F");
         doc.setTextColor(255, 248, 239);
         doc.setFont("helvetica", "bold");
-        doc.setFontSize(20);
-        doc.text("PEPTIDE PROTOCOL", 48, 58);
+        doc.setFontSize(10);
+        doc.text("FIELD", margin + 12, y + 16);
+        doc.text("VALUE", margin + 178, y + 16);
+
         doc.setTextColor(44, 36, 22);
         doc.setFont("helvetica", "normal");
-        doc.setFontSize(11);
-        var y = 104;
-        lines.forEach(function (line) {
-          doc.text(line, 42, y);
-          y += 15;
+        doc.setFontSize(10);
+
+        var tableCursor = y + 24;
+        tableRows.forEach(function (row) {
+          var rowHeight = Math.max(22, row.lines.length * 12 + 10);
+          var rowY = tableCursor;
+          doc.setDrawColor(235, 227, 210);
+          doc.line(margin, rowY, margin + contentWidth, rowY);
+          doc.setFont("helvetica", "bold");
+          doc.text(row.label, margin + 12, rowY + 15);
+          doc.setFont("helvetica", "normal");
+          doc.text(row.lines, margin + 178, rowY + 15);
+          tableCursor += rowHeight;
         });
+
+        y += tableHeight + 16;
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(14);
+        doc.text("Dose Reference Table", margin, y);
+        y += 12;
+
+        doc.setFillColor(255, 251, 244);
+        doc.roundedRect(margin, y, contentWidth, 24 + (referenceRows.length * 22), 10, 10, "FD");
+        doc.setFillColor(217, 78, 42);
+        doc.roundedRect(margin, y, contentWidth, 24, 10, 10, "F");
+        doc.setTextColor(255, 248, 239);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.text("DOSE", margin + 12, y + 16);
+        doc.text("UNITS", margin + 160, y + 16);
+        doc.text("VOLUME", margin + 310, y + 16);
+
+        doc.setTextColor(44, 36, 22);
+        doc.setFontSize(10);
+        referenceRows.forEach(function (row, index) {
+          var rowY = y + 24 + (index * 22);
+          doc.line(margin, rowY, margin + contentWidth, rowY);
+          if (row.dose === formatDose(summary.activeDoseMg) + " mg") {
+            doc.setFillColor(255, 241, 232);
+            doc.rect(margin + 1, rowY + 1, contentWidth - 2, 21, "F");
+          }
+          doc.text(row.dose, margin + 12, rowY + 15);
+          doc.text(row.units, margin + 160, rowY + 15);
+          doc.text(row.volume, margin + 310, rowY + 15);
+        });
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        doc.setTextColor(95, 84, 65);
+        doc.text("For educational and research documentation purposes only. Not medical advice.", margin, pageHeight - 28);
+        doc.text("Copyright Peptide Protocol 2026", pageWidth - margin, pageHeight - 28, { align: "right" });
         doc.save("peptide-protocol-summary.pdf");
         if (message) message.textContent = "PDF downloaded.";
       });
@@ -876,5 +1178,6 @@
   initNav();
   initHeroSlider();
   initFAQ();
+  initSignupForms();
   initCalculator();
 })();
