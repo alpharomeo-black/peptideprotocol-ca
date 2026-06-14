@@ -4,6 +4,14 @@
     endpoint: ""
   };
 
+  var supportedProfileRoutes = {
+    "retatrutide": "peptides/retatrutide.html",
+    "nad-plus": "peptides/nad-plus.html",
+    "klow": "peptides/klow.html",
+    "mots-c": "peptides/mots-c.html",
+    "pt-141": "peptides/pt-141.html"
+  };
+
   var doseOptions = [0.25, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 5, 6, 7, 8, 9, 10, 12];
   var needles = [
     { id: "28g", label: "28G", unitsPerMl: 50, volume: "0.5 mL (50 units)" },
@@ -229,8 +237,8 @@
         if (!constantContactConfig.endpoint) {
           if (message) {
             message.textContent = firstName
-              ? "Thanks, " + firstName + ". The Peptide Protocol Subscribers list is ready in Constant Contact. This local signup block is installed and waiting for the secure live submission endpoint."
-              : "Thanks. The Peptide Protocol Subscribers list is ready in Constant Contact. This local signup block is installed and waiting for the secure live submission endpoint.";
+              ? "Thanks, " + firstName + ". You're on our update list for new profiles, calculator updates, articles, PDFs, and product notes."
+              : "Thanks. You're on our update list for new profiles, calculator updates, articles, PDFs, and product notes.";
           }
           return;
         }
@@ -645,7 +653,7 @@
       infoDescription.textContent = peptide.description;
       infoHalfLife.textContent = peptide.halfLife;
       infoRange.textContent = peptide.range;
-      infoLink.href = "articles.html#" + peptide.slug;
+      infoLink.href = supportedProfileRoutes[peptide.slug] || ("articles.html#" + peptide.slug);
       renderTimeline(peptide);
       renderStacks(peptide);
     }

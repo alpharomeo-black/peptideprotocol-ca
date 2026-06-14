@@ -217,7 +217,7 @@ section { padding: 22px 0 24px; }
   position: relative;
   width: 100vw;
   margin-left: calc(50% - 50vw);
-  height: clamp(560px, 70vh, 760px);
+  height: 560px;
   min-height: 560px;
   overflow: hidden;
   background: var(--surface);
@@ -277,29 +277,29 @@ section { padding: 22px 0 24px; }
   display: grid;
   grid-template-columns: minmax(420px, 600px) 1fr;
   gap: 14px;
-  padding: 34px 0 56px;
-  align-items: center;
+  padding: 50px 0 60px;
+  align-items: start;
 }
 
 .hero-copy {
-  align-self: center;
+  align-self: start;
   max-width: 560px;
   padding-bottom: 0;
 }
 
 .hero-copy .display {
-  margin: 10px 0 14px;
+  margin: 10px 0 18px;
   color: var(--accent);
-  font-size: clamp(3rem, 5.35vw, 5.15rem);
-  line-height: 0.87;
-  letter-spacing: 0.02em;
+  font: 400 clamp(2.9rem, 7vw, 5.1rem)/0.92 var(--font-display);
+  letter-spacing: 0.03em;
+  max-width: 15.1ch;
 }
 
 .hero-copy p {
-  margin: 0 0 16px;
-  max-width: 31ch;
-  font-size: clamp(1rem, 1.45vw, 1.14rem);
-  line-height: 1.48;
+  margin: 0 0 18px;
+  max-width: 46ch;
+  font-size: 1.08rem;
+  line-height: 1.5;
   color: rgba(44, 36, 22, 0.92);
 }
 
@@ -308,7 +308,7 @@ section { padding: 22px 0 24px; }
   flex-wrap: wrap;
   gap: 12px;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 
 .hero-note {
@@ -423,6 +423,36 @@ section { padding: 22px 0 24px; }
   padding: 72px 0 84px;
 }
 
+.page-hero-shell--article {
+  min-height: 560px;
+}
+
+.page-hero-shell--article .page-hero-copy,
+.page-hero-shell--article .page-hero-media,
+.page-hero-copy-inner--article {
+  min-height: 560px;
+}
+
+.page-hero-copy-inner--article {
+  align-content: start;
+  padding: 50px 0 60px;
+}
+
+.page-hero-shell--about {
+  min-height: 600px;
+}
+
+.page-hero-shell--about .page-hero-copy,
+.page-hero-shell--about .page-hero-media,
+.page-hero-copy-inner--about {
+  min-height: 600px;
+}
+
+.page-hero-copy-inner--about {
+  align-content: start;
+  padding: 56px 0 72px;
+}
+
 .page-hero-shell.is-fullbleed .section-kicker,
 .page-hero-shell.is-fullbleed .display,
 .page-hero-shell.is-fullbleed .page-hero-copy p {
@@ -440,6 +470,14 @@ section { padding: 22px 0 24px; }
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 5;
+}
+
+.page-hero--article .page-hero-shell.is-fullbleed .display {
+  max-width: 15.1ch;
+}
+
+.page-hero--article .page-hero-shell.is-fullbleed .page-hero-copy p {
+  max-width: 46ch;
 }
 
 .page-hero-shell.is-fullbleed .page-hero-copy p {
@@ -1584,6 +1622,14 @@ section { padding: 22px 0 24px; }
   }
   .page-hero-copy-inner {
     padding: 48px 0 56px;
+  }
+  .page-hero-copy-inner--article {
+    min-height: 520px;
+    padding: 40px 0 48px;
+  }
+  .page-hero-copy-inner--about {
+    min-height: 560px;
+    padding: 52px 0 52px;
   }
   .page-hero-shell.is-fullbleed .display,
   .page-hero-shell.is-fullbleed .page-hero-copy p {

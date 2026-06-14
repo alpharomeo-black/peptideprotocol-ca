@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="fade" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="rgba(217,78,42,0)"/>
+      <stop offset="100%" stop-color="rgba(217,78,42,0.95)"/>
+    </linearGradient>
+  </defs>
+  <image href="../peptides/pt-141-feature.png" x="0" y="0" width="1200" height="630" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="0" y="380" width="1200" height="250" fill="url(#fade)"/>
+  <g transform="translate(1030,40)">
+    
+    <svg width="76" height="76" viewBox="0 0 76 76" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M19 14L34 28M43 34L58 25M43 41L60 52M34 45L22 59" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="16" cy="12" r="8" fill="#ffffff"/>
+      <circle cx="37" cy="31" r="11" fill="#ffffff"/>
+      <circle cx="61" cy="23" r="7" fill="#ffffff"/>
+      <circle cx="63" cy="55" r="10" fill="#ffffff"/>
+      <circle cx="19" cy="62" r="7" fill="#ffffff"/>
+    </svg>
+  
+  </g>
+  <text x="72" y="500" fill="#ffffff" font-size="72" font-family="'Bebas Neue', Arial, sans-serif" font-weight="700" letter-spacing="2">PT-141</text>
+  <text x="72" y="560" fill="#ffffff" font-size="24" font-family="Arial, sans-serif" letter-spacing="1.2">peptideprotocol.ca</text>
+</svg>

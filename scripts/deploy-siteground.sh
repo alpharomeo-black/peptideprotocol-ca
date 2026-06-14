@@ -72,6 +72,7 @@ rsync -avz --delete \
   --exclude ".env" \
   --exclude ".env.example" \
   --exclude "DEPLOYMENT.md" \
+  --exclude "*.md" \
   --exclude "comp/" \
   --exclude "transfer/" \
   --exclude "launch-package/" \
@@ -79,6 +80,18 @@ rsync -avz --delete \
   --exclude "repo-upload/" \
   --exclude "peptideprotocol-site-content.md" \
   --exclude "*.zip" \
+  --exclude "assets/*.pdf" \
+  --exclude "assets/ChatGPT Image*.png" \
+  --exclude "assets/Peptide Protocol*.png" \
+  --exclude "assets/couple render.png" \
+  --exclude "assets/hero-generated 1.png" \
+  --exclude "assets/hero-generated.jpg" \
+  --exclude "assets/icon *.png" \
+  --exclude "assets/icon-*.png" \
+  --exclude "assets/icon-*.svg" \
+  --exclude "assets/logo-coral.png" \
+  --exclude "assets/logo-knockout.svg" \
+  --exclude "assets/needles.png" \
   -e "ssh ${SSH_OPTS[*]}" \
   "${ROOT_DIR}/" \
   "${SITEGROUND_SSH_USER}@${SITEGROUND_SSH_HOST}:${SITEGROUND_REMOTE_PATH}"
