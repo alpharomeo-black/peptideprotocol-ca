@@ -424,13 +424,13 @@ section { padding: 22px 0 24px; }
 }
 
 .page-hero-shell--article {
-  min-height: 560px;
+  min-height: 600px;
 }
 
 .page-hero-shell--article .page-hero-copy,
 .page-hero-shell--article .page-hero-media,
 .page-hero-copy-inner--article {
-  min-height: 560px;
+  min-height: 600px;
 }
 
 .page-hero-copy-inner--article {
