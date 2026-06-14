@@ -5,6 +5,8 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENV_FILE="${ROOT_DIR}/.env"
 TMP_KEY_FILE=""
+TMP_ASKPASS_FILE=""
+STARTED_SSH_AGENT=""
 
 read_env_value() {
   local key="$1"
@@ -16,9 +18,32 @@ read_env_value() {
   printf '%s' "${line#*=}"
 }
 
+read_private_key_block() {
+  awk '
+    /^SITEGROUND_SSH_PRIVATE_KEY=/ {
+      sub(/^SITEGROUND_SSH_PRIVATE_KEY=/, "")
+      print
+      capture = 1
+      next
+    }
+    capture {
+      print
+      if ($0 ~ /END OPENSSH PRIVATE KEY/) {
+        exit
+      }
+    }
+  ' "${ENV_FILE}"
+}
+
 cleanup() {
   if [[ -n "${TMP_KEY_FILE}" && -f "${TMP_KEY_FILE}" ]]; then
     rm -f "${TMP_KEY_FILE}"
+  fi
+  if [[ -n "${TMP_ASKPASS_FILE}" && -f "${TMP_ASKPASS_FILE}" ]]; then
+    rm -f "${TMP_ASKPASS_FILE}"
+  fi
+  if [[ -n "${STARTED_SSH_AGENT}" && -n "${SSH_AGENT_PID:-}" ]]; then
+    ssh-agent -k >/dev/null 2>&1 || true
   fi
 }
 
@@ -35,6 +60,7 @@ SITEGROUND_SSH_USER="$(read_env_value SITEGROUND_SSH_USER || true)"
 SITEGROUND_REMOTE_PATH="$(read_env_value SITEGROUND_REMOTE_PATH || true)"
 SITEGROUND_SSH_KEY_PATH="${SITEGROUND_SSH_KEY_PATH:-$(read_env_value SITEGROUND_SSH_KEY_PATH || true)}"
 SITEGROUND_SSH_PRIVATE_KEY_B64="${SITEGROUND_SSH_PRIVATE_KEY_B64:-$(read_env_value SITEGROUND_SSH_PRIVATE_KEY_B64 || true)}"
+SITEGROUND_SSH_PRIVATE_KEY="${SITEGROUND_SSH_PRIVATE_KEY:-$(read_private_key_block || true)}"
 SITEGROUND_SSH_PASSPHRASE="${SITEGROUND_SSH_PASSPHRASE:-$(read_env_value SITEGROUND_SSH_PASSPHRASE || true)}"
 
 : "${SITEGROUND_SSH_HOST:?Missing SITEGROUND_SSH_HOST in .env}"
@@ -44,7 +70,7 @@ SITEGROUND_SSH_PASSPHRASE="${SITEGROUND_SSH_PASSPHRASE:-$(read_env_value SITEGRO
 
 SSH_OPTS=(-p "${SITEGROUND_SSH_PORT}" -o StrictHostKeyChecking=accept-new)
 
-if [[ -n "${SITEGROUND_SSH_KEY_PATH:-}" ]]; then
+if [[ -n "${SITEGROUND_SSH_KEY_PATH:-}" && -f "${SITEGROUND_SSH_KEY_PATH}" ]]; then
   SSH_KEY_PATH="${SITEGROUND_SSH_KEY_PATH}"
 elif [[ -n "${SITEGROUND_SSH_PRIVATE_KEY_B64:-}" ]]; then
   TMP_KEY_FILE="$(mktemp)"
@@ -62,6 +88,19 @@ else
 fi
 
 SSH_OPTS+=(-i "${SSH_KEY_PATH}")
+
+if [[ -n "${SITEGROUND_SSH_PASSPHRASE:-}" ]]; then
+  eval "$(ssh-agent -s)" >/dev/null
+  STARTED_SSH_AGENT="1"
+  TMP_ASKPASS_FILE="$(mktemp)"
+  cat > "${TMP_ASKPASS_FILE}" <<'ASKPASS'
+#!/usr/bin/env bash
+printf '%s\n' "${SITEGROUND_SSH_PASSPHRASE}"
+ASKPASS
+  chmod 700 "${TMP_ASKPASS_FILE}"
+  export SITEGROUND_SSH_PASSPHRASE
+  DISPLAY="${DISPLAY:-:0}" SSH_ASKPASS="${TMP_ASKPASS_FILE}" SSH_ASKPASS_REQUIRE=force ssh-add "${SSH_KEY_PATH}" </dev/null >/dev/null
+fi
 
 echo "Deploying Peptide Protocol to SiteGround..."
 
