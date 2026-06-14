@@ -1057,14 +1057,27 @@
       });
     }
 
+    function openProtocolEmail(email, intro) {
+      var body = (intro ? intro + "\n\n" : "") + protocolOutput.textContent;
+      window.location.href = "mailto:" + encodeURIComponent(email) + "?subject=" + encodeURIComponent("Peptide Protocol Summary") + "&body=" + encodeURIComponent(body);
+    }
+
+    function getProtocolEmail() {
+      return ((emailInput && emailInput.value) || "").trim();
+    }
+
+    function isValidProtocolEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
     if (emailButton) {
       emailButton.addEventListener("click", function () {
-        var email = (emailInput.value || "").trim();
+        var email = getProtocolEmail();
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
           if (message) message.textContent = "Enter a valid email address before opening your mail app.";
           return;
         }
-        window.location.href = "mailto:" + encodeURIComponent(email) + "?subject=" + encodeURIComponent("Peptide Protocol Summary") + "&body=" + encodeURIComponent(protocolOutput.textContent);
+        openProtocolEmail(email);
         if (message) message.textContent = "Your mail app is ready with the protocol summary.";
       });
     }
@@ -1180,7 +1193,17 @@
         doc.text("For educational and research documentation purposes only. Not medical advice.", margin, pageHeight - 28);
         doc.text("Copyright Peptide Protocol 2026", pageWidth - margin, pageHeight - 28, { align: "right" });
         doc.save("peptide-protocol-summary.pdf");
-        if (message) message.textContent = "PDF downloaded.";
+        var email = getProtocolEmail();
+        if (email) {
+          if (!isValidProtocolEmail(email)) {
+            if (message) message.textContent = "PDF downloaded. Enter a valid email address if you also want to open an email summary.";
+            return;
+          }
+          openProtocolEmail(email, "Your Peptide Protocol PDF was downloaded locally. Attach peptide-protocol-summary.pdf to this email before sending if you want the PDF included.");
+          if (message) message.textContent = "PDF downloaded and your mail app is ready. Attach the PDF manually before sending.";
+          return;
+        }
+        if (message) message.textContent = "PDF downloaded. Add an email address first if you also want a prefilled email summary.";
       });
     }
 
