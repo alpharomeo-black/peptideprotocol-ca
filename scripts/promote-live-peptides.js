@@ -50,6 +50,8 @@ function promotePeptideFiles() {
       .replace(/src="\.\.\/draft\.js"/g, 'src="../drafts/draft.js"')
       .replace(/href="\.\.\/\.\.\/about\.html"/g, 'href="../about.html"')
       .replace(/href="\.\.\/\.\.\/privacy-policy\.html"/g, 'href="../privacy-policy.html"')
+      .replace(/href="\.\.\/\.\.\/([^"]+\.html)"/g, 'href="../$1"')
+      .replace(/href="\.\.\/\.\.\/assets\/New price list\.pdf"/g, 'href="../index.html#download"')
       .replace(/content="\.\.\/\.\.\/assets\//g, 'content="../assets/')
       .replace(/url\('\.\.\/\.\.\/assets\//g, "url('../assets/");
     writeFile(path.join(livePeptidesDir, file), html);

@@ -970,7 +970,7 @@ function header(active, nested = false) {
 }
 
 function footer(currentKind, nested = false) {
-  const homeHref = nested ? "../index.html" : "index.html";
+  const homeHref = nested ? "../index.html#calculator" : "index.html#calculator";
   const articleHref = nested ? "../articles.html" : "articles.html";
   const peptidesHref = nested ? "../peptides.html" : "peptides.html";
   const privacyHref = fromDraftRoot("privacy-policy.html", nested);
@@ -1340,7 +1340,7 @@ function renderPeptidePage(slug) {
             ${renderSignupWidget({ compact: true, id: `cc-signup-${peptide.slug}` })}
 
             <article class="panel action-stack">
-              <a class="button button-primary button-full" href="${fromDraftRoot("assets/New price list.pdf", true)}">Download Tracker PDF</a>
+              <a class="button button-primary button-full" href="${openCalculatorHref.replace("#calculator", "#download")}">Download Tracker PDF</a>
               <a class="button button-secondary button-full" href="${openCalculatorHref}">Open Calculator</a>
             </article>
           </aside>
@@ -1467,7 +1467,7 @@ function buildDraftIndexPage() {
     .replace(/href="reconstitution-without-guesswork\.html"/g, 'href="../reconstitution-without-guesswork.html"')
     .replace(/href="recovery-repair-performance-stacking\.html"/g, 'href="../recovery-repair-performance-stacking.html"')
     .replace(/href="storage-scheduling-routine\.html"/g, 'href="../storage-scheduling-routine.html"')
-    .replace(/href="assets\/New price list\.pdf"/g, 'href="../assets/New price list.pdf"');
+    .replace(/href="assets\/New price list\.pdf"/g, 'href="../index.html#download"');
 
   return `${pageHead({
     pageTitle: "Peptide Protocol | Calculator",

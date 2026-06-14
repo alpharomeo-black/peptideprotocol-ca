@@ -317,11 +317,17 @@
       targetDoseSelect.innerHTML = doseOptions.map(function (value) {
         return '<option value="' + value + '">' + formatDose(value) + ' mg</option>';
       }).join("");
-      peptideSelect.value = "Retatrutide";
+      var requestedPeptide = new URLSearchParams(window.location.search).get("peptide");
+      var requestedMatch = requestedPeptide && peptideCatalog.find(function (peptide) {
+        return peptide.slug === requestedPeptide.toLowerCase() || peptide.name.toLowerCase() === requestedPeptide.toLowerCase();
+      });
+      peptideSelect.value = requestedMatch ? requestedMatch.name : "Retatrutide";
       targetDoseSelect.value = "2";
-      vialSize.value = "10";
-      peptideAmount.value = "10";
-      state.selectedPresetSize = 10;
+      var startingPeptide = getPeptide(peptideSelect.value);
+      var startingSize = startingPeptide.sizes.includes(10) ? 10 : startingPeptide.sizes[0];
+      vialSize.value = String(startingSize);
+      peptideAmount.value = String(startingSize);
+      state.selectedPresetSize = startingSize;
     }
 
     function renderNeedles() {
