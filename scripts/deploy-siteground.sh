@@ -113,6 +113,7 @@ rsync -avz --delete \
   --exclude "DEPLOYMENT.md" \
   --exclude "*.md" \
   --exclude "comp/" \
+  --exclude "drafts/" \
   --exclude "transfer/" \
   --exclude "launch-package/" \
   --exclude "launch-package-clean-2/" \
