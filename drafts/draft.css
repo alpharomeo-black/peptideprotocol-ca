@@ -140,6 +140,10 @@ body.draft-page {
   object-position: center top;
 }
 
+.profile-hero--center img {
+  object-position: center center;
+}
+
 .full-bleed-hero-overlay {
   position: absolute;
   inset: 0;

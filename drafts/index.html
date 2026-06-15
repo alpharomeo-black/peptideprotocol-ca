@@ -268,19 +268,20 @@
             <div class="download-copy">
               <div class="section-kicker">Download My Protocol</div>
               <h2 class="section-title">Save The Math, The Needle, And The Weekly Plan.</h2>
-              <p>Use the output below as your clean protocol record. Copy it, email it to yourself, or export a simple PDF to keep alongside your supplies.</p>
+              <p>Use the output below as your clean protocol record. Download the branded PDF, copy the summary, or open a prefilled email to send the protocol notes to yourself.</p>
               <div class="protocol-output" id="protocolOutput"></div>
             </div>
             <div class="download-form">
               <form>
                 <div class="field">
-                  <label for="protocolEmail">Email My Protocol</label>
-                  <input id="protocolEmail" type="email" placeholder="Email my protocol summary">
+                  <label for="protocolEmail">Optional Email Address</label>
+                  <input id="protocolEmail" type="email" placeholder="name@example.com">
+                  <p class="field-help">If you enter an email before downloading, we will download the PDF and open your mail app with the summary ready. Because this is a static site, attach the downloaded PDF manually before sending.</p>
                 </div>
                 <div class="download-actions">
                   <button class="button button-primary button-full" id="downloadPdf" type="button">Download PDF</button>
                   <button class="button button-secondary" id="copyProtocol" type="button">Copy Summary</button>
-                  <button class="button button-secondary" id="emailProtocol" type="button">Send By Email</button>
+                  <button class="button button-secondary" id="emailProtocol" type="button">Email Summary Only</button>
                 </div>
                 <p class="small-copy" id="protocolMessage"></p>
               </form>

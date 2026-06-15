@@ -1209,6 +1209,7 @@ function renderPeptidePage(slug) {
     .join("") : "";
   const analogyDiagram = buildAnalogyDiagram(slug);
   const diagramMarkup = analogyDiagram ? `<div class="analogy-inline-diagram">${analogyDiagram}</div>` : "";
+  const heroPositionClass = ["nad-plus", "pt-141"].includes(slug) ? " profile-hero--center" : "";
   return `${pageHead({
     pageTitle: `Peptide Protocol | ${peptide.title}`,
     description: summaryLine,
@@ -1220,7 +1221,7 @@ function renderPeptidePage(slug) {
   <div class="page-shell peptide-profile-page">
     ${header("peptides", true)}
     <main>
-      <section class="full-bleed-hero profile-hero">
+      <section class="full-bleed-hero profile-hero${heroPositionClass}">
         <img src="${fromDraftRoot(peptide.featureImage, true)}" alt="${escapeHtml(peptide.title)} feature image">
         <div class="full-bleed-hero-overlay"></div>
       </section>
@@ -1690,6 +1691,10 @@ body.draft-page {
 
 .profile-hero img {
   object-position: center top;
+}
+
+.profile-hero--center img {
+  object-position: center center;
 }
 
 .full-bleed-hero-overlay {
