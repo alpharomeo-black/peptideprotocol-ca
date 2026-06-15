@@ -1,4 +1,4 @@
-@import url("../styles/site.css?v=20260615a");
+@import url("../styles/site.css?v=20260615b");
 
 body.draft-page {
   background:
@@ -1129,18 +1129,6 @@ body.draft-page {
   width: 172px;
 }
 
-.profile-overlap-vial-label {
-  position: absolute;
-  left: 50%;
-  bottom: 42px;
-  transform: translateX(-50%);
-  color: #fff;
-  font: 400 1.45rem/1 var(--font-display);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
 .profile-overlap-copy .display {
   color: #d94e2a;
   margin-bottom: 8px;
@@ -1207,6 +1195,54 @@ body.draft-page {
   display: flex;
   justify-content: center;
   margin-bottom: 18px;
+}
+
+.draft-dose-table-wrap {
+  display: block;
+}
+
+.draft-dose-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border: 1px solid rgba(44,36,22,0.12);
+  border-radius: 18px;
+  background: rgba(255,255,255,0.9);
+}
+
+.draft-dose-table th,
+.draft-dose-table td {
+  padding: 11px 12px;
+  border-bottom: 1px solid rgba(44,36,22,0.08);
+  text-align: left;
+  font-size: 0.88rem;
+}
+
+.draft-dose-table th {
+  color: #ba401f;
+  font: 400 1.05rem/1 var(--font-display);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: rgba(217,78,42,0.08);
+}
+
+.draft-dose-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.draft-dose-table tr.is-active td {
+  border-top: 2px solid #d94e2a;
+  border-bottom: 2px solid #d94e2a;
+  background: rgba(217,78,42,0.09);
+}
+
+.draft-dose-table tr.is-active td:first-child {
+  border-left: 2px solid #d94e2a;
+}
+
+.draft-dose-table tr.is-active td:last-child {
+  border-right: 2px solid #d94e2a;
 }
 
 @media (max-width: 1040px) {
@@ -1313,11 +1349,6 @@ body.draft-page {
 
   .profile-overlap-vial img {
     width: 138px;
-  }
-
-  .profile-overlap-vial-label {
-    bottom: 34px;
-    font-size: 1.2rem;
   }
 
   .issue-card {

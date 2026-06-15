@@ -217,8 +217,8 @@ section { padding: 22px 0 24px; }
   position: relative;
   width: 100vw;
   margin-left: calc(50% - 50vw);
-  height: 640px;
-  min-height: 640px;
+  height: 720px;
+  min-height: 720px;
   overflow: hidden;
   background: var(--surface);
   box-shadow: var(--shadow);

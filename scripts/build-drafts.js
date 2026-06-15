@@ -931,9 +931,9 @@ function pageHead({ pageTitle, description, ogImage, pageUrl, nested = false }) 
   <title>${escapeHtml(pageTitle)}</title>
   <meta name="description" content="${escapeHtml(description)}">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9704466432230109" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="${siteCssPath}?v=20260615a">
+  <link rel="stylesheet" href="${siteCssPath}?v=20260615b">
   <link rel="stylesheet" href="${draftCssPath}">
-  <script src="${siteJsPath}?v=20260615a" defer></script>
+  <script src="${siteJsPath}?v=20260615b" defer></script>
   <script src="${draftJsPath}" defer></script>
 </head>`;
 }
@@ -1230,7 +1230,6 @@ function renderPeptidePage(slug) {
           <div class="profile-overlap-card">
             <div class="profile-overlap-vial">
               <img src="${fromDraftRoot("assets/vial.png", true)}" alt="${escapeHtml(peptide.title)} branded vial">
-              <span class="profile-overlap-vial-label">${escapeHtml(peptide.title)}</span>
             </div>
             <div class="profile-overlap-copy">
               <h1 class="display">${escapeHtml(peptide.title)}</h1>
@@ -1551,7 +1550,7 @@ function buildPeptidesIndexPage() {
 }
 
 function buildDraftCss() {
-  return `@import url("../styles/site.css?v=20260615a");
+  return `@import url("../styles/site.css?v=20260615b");
 
 body.draft-page {
   background:
@@ -2682,18 +2681,6 @@ body.draft-page {
   width: 172px;
 }
 
-.profile-overlap-vial-label {
-  position: absolute;
-  left: 50%;
-  bottom: 42px;
-  transform: translateX(-50%);
-  color: #fff;
-  font: 400 1.45rem/1 var(--font-display);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
 .profile-overlap-copy .display {
   color: #d94e2a;
   margin-bottom: 8px;
@@ -2760,6 +2747,54 @@ body.draft-page {
   display: flex;
   justify-content: center;
   margin-bottom: 18px;
+}
+
+.draft-dose-table-wrap {
+  display: block;
+}
+
+.draft-dose-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border: 1px solid rgba(44,36,22,0.12);
+  border-radius: 18px;
+  background: rgba(255,255,255,0.9);
+}
+
+.draft-dose-table th,
+.draft-dose-table td {
+  padding: 11px 12px;
+  border-bottom: 1px solid rgba(44,36,22,0.08);
+  text-align: left;
+  font-size: 0.88rem;
+}
+
+.draft-dose-table th {
+  color: #ba401f;
+  font: 400 1.05rem/1 var(--font-display);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: rgba(217,78,42,0.08);
+}
+
+.draft-dose-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.draft-dose-table tr.is-active td {
+  border-top: 2px solid #d94e2a;
+  border-bottom: 2px solid #d94e2a;
+  background: rgba(217,78,42,0.09);
+}
+
+.draft-dose-table tr.is-active td:first-child {
+  border-left: 2px solid #d94e2a;
+}
+
+.draft-dose-table tr.is-active td:last-child {
+  border-right: 2px solid #d94e2a;
 }
 
 @media (max-width: 1040px) {
@@ -2866,11 +2901,6 @@ body.draft-page {
 
   .profile-overlap-vial img {
     width: 138px;
-  }
-
-  .profile-overlap-vial-label {
-    bottom: 34px;
-    font-size: 1.2rem;
   }
 
   .issue-card {
@@ -2993,6 +3023,65 @@ function buildDraftJs() {
     observer.observe(link, { attributes: true, attributeFilter: ["href"] });
     applyQueryPeptide();
     window.setTimeout(syncDraftArticleLink, 50);
+  }
+
+  function parseDoseCard(card) {
+    var text = card.textContent.replace(/\\s+/g, " ").trim();
+    var dose = (card.querySelector("strong") || {}).textContent || "";
+    var units = (card.querySelector(".value") || {}).textContent || "";
+    var details = (card.querySelector("p") || {}).textContent || text;
+    var volumeMatch = details.match(/([0-9.]+)\\s*mL/i);
+    var needleMatch = details.match(/(28G|29G|31G)[^·]*recommended/i);
+    var weeksMatch = details.match(/([0-9.]+)\\s*weeks/i);
+    var variable = /variable schedule/i.test(details);
+    return {
+      dose: dose.trim(),
+      units: units.trim(),
+      volume: volumeMatch ? volumeMatch[1] + " mL" : "—",
+      needle: needleMatch ? needleMatch[0].replace(/recommended/i, "").trim() + " recommended" : "—",
+      duration: variable ? "Variable" : (weeksMatch ? weeksMatch[1] + " weeks" : "—"),
+      active: card.classList.contains("is-active")
+    };
+  }
+
+  function renderDraftDoseTable() {
+    var doseCards = document.getElementById("doseCards");
+    if (!doseCards) return;
+    var cards = Array.prototype.slice.call(doseCards.querySelectorAll(".dose-card"));
+    if (!cards.length) return;
+    var rows = cards.map(parseDoseCard);
+    doseCards.classList.add("draft-dose-table-wrap");
+    doseCards.innerHTML = '<table class="draft-dose-table"><thead><tr><th>Dose</th><th>Units</th><th>mL</th><th>Needle</th><th>Duration</th></tr></thead><tbody>' +
+      rows.map(function (row) {
+        return '<tr' + (row.active ? ' class="is-active"' : '') + '><td>' + row.dose + '</td><td>' + row.units + '</td><td>' + row.volume + '</td><td>' + row.needle + '</td><td>' + row.duration + '</td></tr>';
+      }).join("") +
+      '</tbody></table>';
+  }
+
+  var doseCardsNode = document.getElementById("doseCards");
+  if (doseCardsNode) {
+    var doseObserver = new MutationObserver(function () {
+      window.setTimeout(renderDraftDoseTable, 0);
+    });
+    doseObserver.observe(doseCardsNode, { childList: true });
+    window.setTimeout(renderDraftDoseTable, 120);
+  }
+
+  var protocolEmail = document.getElementById("protocolEmail");
+  var downloadPdf = document.getElementById("downloadPdf");
+  var emailProtocol = document.getElementById("emailProtocol");
+  var fieldHelp = protocolEmail && protocolEmail.parentElement ? protocolEmail.parentElement.querySelector(".field-help") : null;
+  if (downloadPdf) downloadPdf.textContent = "Download PDF (Local File)";
+  if (emailProtocol) emailProtocol.textContent = "Open Email Draft";
+  if (fieldHelp) {
+    fieldHelp.textContent = "Draft UX note: this static site cannot silently email a PDF. Download creates a local PDF. Open Email Draft prepares a message, and the user attaches the PDF manually unless we add a backend/email service later.";
+  }
+  var actions = document.querySelector(".download-actions");
+  if (actions && !document.querySelector(".draft-pdf-scope-note")) {
+    var note = document.createElement("p");
+    note.className = "small-copy draft-pdf-scope-note";
+    note.textContent = "Draft PDF idea: include the selected target dose plus nearby doses above and below, instead of every common dose row.";
+    actions.insertAdjacentElement("afterend", note);
   }
 });`;
 }

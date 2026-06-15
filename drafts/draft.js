@@ -113,4 +113,63 @@ document.addEventListener("DOMContentLoaded", function () {
     applyQueryPeptide();
     window.setTimeout(syncDraftArticleLink, 50);
   }
+
+  function parseDoseCard(card) {
+    var text = card.textContent.replace(/\s+/g, " ").trim();
+    var dose = (card.querySelector("strong") || {}).textContent || "";
+    var units = (card.querySelector(".value") || {}).textContent || "";
+    var details = (card.querySelector("p") || {}).textContent || text;
+    var volumeMatch = details.match(/([0-9.]+)\s*mL/i);
+    var needleMatch = details.match(/(28G|29G|31G)[^·]*recommended/i);
+    var weeksMatch = details.match(/([0-9.]+)\s*weeks/i);
+    var variable = /variable schedule/i.test(details);
+    return {
+      dose: dose.trim(),
+      units: units.trim(),
+      volume: volumeMatch ? volumeMatch[1] + " mL" : "—",
+      needle: needleMatch ? needleMatch[0].replace(/recommended/i, "").trim() + " recommended" : "—",
+      duration: variable ? "Variable" : (weeksMatch ? weeksMatch[1] + " weeks" : "—"),
+      active: card.classList.contains("is-active")
+    };
+  }
+
+  function renderDraftDoseTable() {
+    var doseCards = document.getElementById("doseCards");
+    if (!doseCards) return;
+    var cards = Array.prototype.slice.call(doseCards.querySelectorAll(".dose-card"));
+    if (!cards.length) return;
+    var rows = cards.map(parseDoseCard);
+    doseCards.classList.add("draft-dose-table-wrap");
+    doseCards.innerHTML = '<table class="draft-dose-table"><thead><tr><th>Dose</th><th>Units</th><th>mL</th><th>Needle</th><th>Duration</th></tr></thead><tbody>' +
+      rows.map(function (row) {
+        return '<tr' + (row.active ? ' class="is-active"' : '') + '><td>' + row.dose + '</td><td>' + row.units + '</td><td>' + row.volume + '</td><td>' + row.needle + '</td><td>' + row.duration + '</td></tr>';
+      }).join("") +
+      '</tbody></table>';
+  }
+
+  var doseCardsNode = document.getElementById("doseCards");
+  if (doseCardsNode) {
+    var doseObserver = new MutationObserver(function () {
+      window.setTimeout(renderDraftDoseTable, 0);
+    });
+    doseObserver.observe(doseCardsNode, { childList: true });
+    window.setTimeout(renderDraftDoseTable, 120);
+  }
+
+  var protocolEmail = document.getElementById("protocolEmail");
+  var downloadPdf = document.getElementById("downloadPdf");
+  var emailProtocol = document.getElementById("emailProtocol");
+  var fieldHelp = protocolEmail && protocolEmail.parentElement ? protocolEmail.parentElement.querySelector(".field-help") : null;
+  if (downloadPdf) downloadPdf.textContent = "Download PDF (Local File)";
+  if (emailProtocol) emailProtocol.textContent = "Open Email Draft";
+  if (fieldHelp) {
+    fieldHelp.textContent = "Draft UX note: this static site cannot silently email a PDF. Download creates a local PDF. Open Email Draft prepares a message, and the user attaches the PDF manually unless we add a backend/email service later.";
+  }
+  var actions = document.querySelector(".download-actions");
+  if (actions && !document.querySelector(".draft-pdf-scope-note")) {
+    var note = document.createElement("p");
+    note.className = "small-copy draft-pdf-scope-note";
+    note.textContent = "Draft PDF idea: include the selected target dose plus nearby doses above and below, instead of every common dose row.";
+    actions.insertAdjacentElement("afterend", note);
+  }
 });
