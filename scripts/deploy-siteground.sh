@@ -104,6 +104,10 @@ fi
 
 echo "Deploying Peptide Protocol to SiteGround..."
 
+ssh "${SSH_OPTS[@]}" \
+  "${SITEGROUND_SSH_USER}@${SITEGROUND_SSH_HOST}" \
+  "rm -rf '${SITEGROUND_REMOTE_PATH%/}/drafts'"
+
 rsync -avz --delete \
   --exclude ".git/" \
   --exclude ".github/" \
