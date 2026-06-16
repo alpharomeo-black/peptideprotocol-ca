@@ -30,9 +30,9 @@ function promoteIndex() {
     .replace(/url\('\.\.\/assets\//g, "url('assets/")
     .replace(/content="\.\.\/assets\//g, 'content="assets/')
     .replace(/href="\.\.\/styles\/site\.css/g, 'href="styles/site.css')
-    .replace(/href="draft\.css"/g, 'href="drafts/draft.css"')
+    .replace(/href="draft\.css"/g, 'href="styles/content.css?v=20260616a"')
     .replace(/src="\.\.\/scripts\/site\.js/g, 'src="scripts/site.js')
-    .replace(/src="draft\.js"/g, 'src="drafts/draft.js"')
+    .replace(/src="draft\.js"/g, 'src="scripts/content.js?v=20260616a"')
     .replace(/<a class="brand" href="index\.html"/g, '<a class="brand" href="/"');
   writeFile(path.join(root, "peptides.html"), html);
 }
@@ -46,9 +46,9 @@ function promotePeptideFiles() {
     html = html
       .replace(/src="\.\.\/\.\.\/assets\//g, 'src="../assets/')
       .replace(/href="\.\.\/\.\.\/styles\/site\.css/g, 'href="../styles/site.css')
-      .replace(/href="\.\.\/draft\.css"/g, 'href="../drafts/draft.css"')
+      .replace(/href="\.\.\/draft\.css"/g, 'href="../styles/content.css?v=20260616a"')
       .replace(/src="\.\.\/\.\.\/scripts\/site\.js/g, 'src="../scripts/site.js')
-      .replace(/src="\.\.\/draft\.js"/g, 'src="../drafts/draft.js"')
+      .replace(/src="\.\.\/draft\.js"/g, 'src="../scripts/content.js?v=20260616a"')
       .replace(/href="\.\.\/\.\.\/about\.html"/g, 'href="../about.html"')
       .replace(/href="\.\.\/\.\.\/privacy-policy\.html"/g, 'href="../privacy-policy.html"')
       .replace(/href="\.\.\/\.\.\/([^"]+\.html)"/g, 'href="../$1"')

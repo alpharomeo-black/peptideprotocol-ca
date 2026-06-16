@@ -3086,6 +3086,14 @@ function buildDraftJs() {
 });`;
 }
 
+function buildContentCss() {
+  return buildDraftCss().replace(/^@import url\("\.\.\/styles\/site\.css\?v=[^"]+"\);\n\n?/, "");
+}
+
+function buildContentJs() {
+  return buildDraftJs();
+}
+
 function buildDraftIndex() {
   return buildDraftIndexPage();
 }
@@ -3163,6 +3171,8 @@ function buildSearchIndex() {
 
 fs.writeFileSync(path.join(draftsDir, "draft.css"), buildDraftCss());
 fs.writeFileSync(path.join(draftsDir, "draft.js"), buildDraftJs());
+fs.writeFileSync(path.join(root, "styles", "content.css"), buildContentCss());
+fs.writeFileSync(path.join(root, "scripts", "content.js"), buildContentJs());
 fs.writeFileSync(path.join(draftsDir, "articles.html"), buildDraftArticlesPage());
 fs.writeFileSync(path.join(draftsDir, "index.html"), buildDraftIndex());
 fs.writeFileSync(path.join(draftsDir, "peptides.html"), buildPeptidesIndexPage());
