@@ -931,9 +931,9 @@ function pageHead({ pageTitle, description, ogImage, pageUrl, nested = false }) 
   <title>${escapeHtml(pageTitle)}</title>
   <meta name="description" content="${escapeHtml(description)}">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9704466432230109" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="${siteCssPath}?v=20260615d">
+  <link rel="stylesheet" href="${siteCssPath}?v=20260616b">
   <link rel="stylesheet" href="${draftCssPath}">
-  <script src="${siteJsPath}?v=20260615d" defer></script>
+  <script src="${siteJsPath}?v=20260616b" defer></script>
   <script src="${draftJsPath}" defer></script>
 </head>`;
 }
@@ -1550,7 +1550,7 @@ function buildPeptidesIndexPage() {
 }
 
 function buildDraftCss() {
-  return `@import url("../styles/site.css?v=20260615d");
+  return `@import url("../styles/site.css?v=20260616b");
 
 body.draft-page {
   background:

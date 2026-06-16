@@ -14,9 +14,9 @@
 
   var doseOptions = [0.25, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 5, 6, 7, 8, 9, 10, 12];
   var needles = [
-    { id: "28g", label: "28G", unitsPerMl: 50, volume: "0.5 mL (50 units)" },
+    { id: "31g", label: "31G", unitsPerMl: 100, volume: "1 mL (100 units)" },
     { id: "29g", label: "29G", unitsPerMl: 100, volume: "1 mL (100 units)" },
-    { id: "31g", label: "31G", unitsPerMl: 100, volume: "1 mL (100 units)" }
+    { id: "28g", label: "28G", unitsPerMl: 50, volume: "0.5 mL (50 units)" }
   ];
 
   var categoryProfiles = {
@@ -132,12 +132,56 @@
     makePeptide("Mazdutide", "metabolic", { sizes: [5, 10, 15], range: "1 to 9 mg weekly", timeline: ["1 mg", "2 mg", "3 mg", "4 mg"] })
   ];
 
+  var doseGuidanceByName = {
+    "Retatrutide": "Phase 2 obesity trials used once-weekly escalation toward 4 mg, 8 mg, and 12 mg maintenance arms, typically stepping up every 4 weeks if tolerated.",
+    "Tirzepatide": "FDA-approved tirzepatide starts at 2.5 mg once weekly for 4 weeks, then increases by 2.5 mg every 4 weeks toward 5 to 15 mg maintenance.",
+    "Semaglutide": "FDA-approved semaglutide starts at 0.25 mg weekly and typically steps up every 4 weeks through 0.5 mg, 1 mg, 1.7 mg, and 2.4 mg maintenance if tolerated.",
+    "BPC-157": "Human dosing data for BPC-157 remain limited and investigational, so most documented protocols stay in the low-hundreds of mcg range and build cautiously.",
+    "TB-500": "TB-500 dosing is not standardized in approved human use; investigational protocols are usually weekly and often stay within the lower end of the mg range first.",
+    "KLOW (GHK-Cu+TB500+BPC157+KPV)": "There is no clinical-trial titration standard for this four-compound blend, so conservative protocols usually anchor dosing to the lower end of the blend-specific range and assess tolerability stepwise.",
+    "MOTS-c": "Human MOTS-c studies have generally used intermittent mg-level dosing rather than weekly obesity-style escalation, so protocols usually stay in the lower to middle mg range first.",
+    "NAD+": "NAD+ studies and clinical wellness protocols are usually session-based rather than weekly titration, with dosing commonly starting in the tens of mg and adjusting by response and route.",
+    "CJC-1295 No DAC": "Published human CJC protocols typically stay in the low-hundreds of mcg per dose and adjust by response rather than using a weekly mg escalation model.",
+    "Ipamorelin": "Human ipamorelin dosing is not standardized in routine care, but protocol notes usually stay in the 100 to 300 mcg range per dose and increase gradually only if tolerated.",
+    "PT-141": "FDA-approved bremelanotide uses 1.75 mg subcutaneously as needed, with no more than one dose in 24 hours and no more than eight doses in a month.",
+    "Semax": "Published Semax use is typically intranasal and measured in low-hundreds of mcg per dose or mcg-per-kg research dosing, not weekly mg escalation.",
+    "Selank": "Human Selank literature is limited, but documented use generally stays in low-hundreds of mcg per dose and is usually titrated by response rather than by weekly mg steps.",
+    "Thymosin Alpha-1": "Clinical studies commonly use thymosin alpha-1 around 1.6 mg twice weekly or short daily immune-support courses, so most protocols stay near the lower end first.",
+    "Epithalon": "Epithalon human dosing literature is limited and usually cycle-based, so most documented protocols use short mg-level daily courses rather than open-ended escalation.",
+    "GHK-Cu": "Injectable GHK-Cu remains investigational in humans, and most documented protocols stay at low mg exposure while response and irritation are monitored closely.",
+    "Hexarelin": "Older human endocrine studies used microgram-level dosing, so most protocol notes stay near the low-hundreds of mcg per dose rather than pushing quickly upward.",
+    "AOD9604": "Human obesity studies evaluated AOD9604 as a daily microgram-range peptide, so protocols usually stay in the 250 to 500 mcg daily range instead of weekly mg escalation.",
+    "Tesamorelin": "FDA-approved tesamorelin is used as a daily dose rather than a weekly escalation peptide, so protocols usually stay near the labeled daily strength and adjust only with supervision.",
+    "HGH": "Adult HGH dosing is individualized to indication and IGF-1 response, so standard practice is to start low and titrate gradually rather than jump to higher IU ranges.",
+    "Melanotan II": "Melanotan II remains investigational, and most documented protocols build from very small mcg-level doses because nausea and skin-darkening effects become obvious quickly.",
+    "DSIP": "DSIP human dosing evidence is limited, so most documented protocols stay in the low-hundreds of mcg range, usually timed near bedtime and adjusted cautiously.",
+    "SS-31": "Human elamipretide trials have used daily dosing, including higher fixed mg exposure than most community peptide protocols, so conservative investigational use usually starts below trial ceilings.",
+    "IGF-1 LR3": "IGF-1 LR3 is not an approved clinical product, and IGF-pathway compounds are dose-sensitive, so conservative protocols usually stay in the low-mcg range and escalate slowly if at all.",
+    "Cerebrolysin": "Published Cerebrolysin studies use course-based mL dosing rather than weekly peptide titration, often giving daily sessions in defined cycles instead of indefinite escalation.",
+    "KPV": "Human KPV dosing data are sparse, so most documented protocols stay in the few-hundred-mcg range and build cautiously only if response and tolerability are clear.",
+    "Oxytocin": "Approved oxytocin dosing is obstetric and not comparable to wellness peptide use, so non-obstetric protocols remain investigational and should be approached conservatively.",
+    "Kisspeptin-10": "Human kisspeptin studies often use supervised research dosing rather than standardized home protocols, so conservative low-mcg starts make more sense than aggressive titration.",
+    "5-Amino-1MQ": "Human clinical dosing for 5-Amino-1MQ is not established, so any protocol use remains investigational and is usually kept conservative within the documented range above.",
+    "AICAR": "AICAR human metabolic and exercise data are limited, and dosing remains investigational, so protocols usually stay conservative and avoid rapid escalation.",
+    "Pinealon": "Human Pinealon literature is sparse, so most documented protocols stay in low-hundreds of mcg per dose and adjust by response rather than by large mg jumps.",
+    "Sermorelin": "Older sermorelin data and protocol notes usually stay in the low-hundreds of mcg, often near bedtime, and titrate more by symptom response than by weekly mg steps.",
+    "Thymalin": "Thymalin dosing literature is limited and generally cycle-based, so documented protocols usually stay in short mg-level courses rather than continuous escalation.",
+    "ARA-290": "Human ARA-290 studies have used intermittent mg-level dosing several times weekly, so protocols are typically stepwise and intermittent rather than daily long-term escalation.",
+    "Cagrilintide": "Phase 2 obesity studies used once-weekly dosing from 0.3 mg up toward 4.5 mg, with slower escalation than many GLP-1 family protocols.",
+    "Survodutide": "Phase 2 obesity and MASH studies used weekly mg-level escalation, with tolerability often determining whether patients stay in lower mid-range maintenance doses.",
+    "Mazdutide": "Phase 2 obesity studies used once-weekly escalation from lower starting doses toward 6 to 9 mg maintenance arms, usually stepping upward gradually."
+  };
+
   function formatDose(value) {
     return Number.isInteger(value) ? String(value) : String(value).replace(/\.0$/, "");
   }
 
   function getPeptide(name) {
     return peptideCatalog.find(function (item) { return item.name === name; }) || peptideCatalog[0];
+  }
+
+  function getDoseGuidance(peptide) {
+    return doseGuidanceByName[peptide.name] || ("Published human dosing data for " + peptide.name + " are limited, so the calculator defaults to the documented range shown above and encourages conservative titration.");
   }
 
   function initNav() {
@@ -266,6 +310,7 @@
     var bacWater = document.getElementById("bacWater");
     var frequency = document.getElementById("frequency");
     var targetDoseSelect = document.getElementById("targetDose");
+    var doseResearchNote = document.getElementById("doseResearchNote");
     var reverseUnits = document.getElementById("reverseUnits");
     var dilutionDesiredUnits = document.getElementById("dilutionDesiredUnits");
     var customPeptideName = document.getElementById("customPeptideName");
@@ -776,6 +821,12 @@
         renderKnownPeptideInfo(peptide);
       }
 
+      if (doseResearchNote) {
+        doseResearchNote.textContent = state.mode === "manual"
+          ? "Manual mode uses your custom inputs, so peptide-specific clinical titration guidance is not shown here."
+          : getDoseGuidance(peptide);
+      }
+
       if (state.mode === "manual" && !(customPeptideName.value || "").trim()) {
         calcStatus.textContent = "Add a custom peptide name so the exported protocol is easy to recognize later.";
       }
@@ -791,7 +842,7 @@
         activeUnits = volumeToUnits(activeVolumeMl);
         var standardNeedle = recommendedNeedleForVolume(activeVolumeMl);
         durationText = describeDuration(peptideMg / activeDoseMg, schedule);
-        suggestion.textContent = smartSuggestion(peptideMg, activeDoseMg, bacMl) + " Clinical trials started at 2 mg and increased every 4 weeks. Most people find their optimal dose between 6-8 mg.";
+        suggestion.textContent = smartSuggestion(peptideMg, activeDoseMg, bacMl);
         doseGridLabel.textContent = "Common Doses";
         renderComparisonTable("BAC Comparison For " + formatDose(activeDoseMg) + " mg", peptideMg, activeDoseMg, bacMl);
         summary = {
@@ -836,7 +887,7 @@
         activeVolumeMl = reverseResult.volumeMl;
         var reverseNeedle = recommendedNeedleForVolume(activeVolumeMl);
         durationText = describeDuration(peptideMg / Math.max(activeDoseMg, 0.0001), schedule);
-        suggestion.textContent = cleanUnits(activeUnits) + " units on the " + state.selectedNeedle.label + " delivers " + activeDoseMg.toFixed(3).replace(/0+$/, "").replace(/\.$/, "") + " mg (" + Math.round(reverseResult.doseMcg) + " mcg). Clinical trials started at 2 mg and increased every 4 weeks. Most people find their optimal dose between 6-8 mg.";
+        suggestion.textContent = cleanUnits(activeUnits) + " units on the " + state.selectedNeedle.label + " delivers " + activeDoseMg.toFixed(3).replace(/0+$/, "").replace(/\.$/, "") + " mg (" + Math.round(reverseResult.doseMcg) + " mcg).";
         doseGridLabel.textContent = "Common Doses At This Concentration";
         renderComparisonTable("BAC Comparison For " + formatDose(Number(activeDoseMg.toFixed(3))) + " mg", peptideMg, activeDoseMg, bacMl);
         summary = {
@@ -877,7 +928,7 @@
           activeVolumeMl = best.volumeMl;
           var compareNeedle = recommendedNeedleForVolume(activeVolumeMl);
           durationText = describeDuration(peptideMg / activeDoseMg, schedule);
-          suggestion.textContent = "The cleanest comparison result uses " + bacMl.toFixed(1) + " mL BAC water and lands near " + cleanUnits(activeUnits) + " units. Clinical trials started at 2 mg and increased every 4 weeks. Most people find their optimal dose between 6-8 mg.";
+          suggestion.textContent = "The cleanest comparison result uses " + bacMl.toFixed(1) + " mL BAC water and lands near " + cleanUnits(activeUnits) + " units.";
           doseGridLabel.textContent = "Common Doses Using Best BAC Match";
           summary = {
             modeLabel: "Dilution Mode · Compare BAC Volumes",
@@ -921,7 +972,7 @@
           if (bacMl < 0.2 || bacMl > 10) {
             calcStatus.textContent = "The solved BAC amount is mathematically valid, but it may be impractical in a real vial. Double-check the target dose and unit goal.";
           }
-          suggestion.textContent = "To make " + formatDose(activeDoseMg) + " mg equal " + cleanUnits(activeUnits) + " units, reconstitute with " + bacMl.toFixed(2) + " mL BAC water. Clinical trials started at 2 mg and increased every 4 weeks. Most people find their optimal dose between 6-8 mg.";
+          suggestion.textContent = "To make " + formatDose(activeDoseMg) + " mg equal " + cleanUnits(activeUnits) + " units, reconstitute with " + bacMl.toFixed(2) + " mL BAC water.";
           doseGridLabel.textContent = "Common Doses Using Solved BAC";
           summary = {
             modeLabel: "Dilution Mode · Solve Required BAC",
@@ -964,8 +1015,8 @@
         var manualNeedle = recommendedNeedleForVolume(activeVolumeMl);
         durationText = describeDuration(peptideMg / activeDoseMg, schedule);
         suggestion.textContent = doseUnit.value === "mcg"
-          ? Number(manualDoseValue.value || 0) + " mcg requires " + cleanUnits(activeUnits) + " units on the " + state.selectedNeedle.label + ". Clinical trials started at 2 mg and increased every 4 weeks. Most people find their optimal dose between 6-8 mg."
-          : formatDose(activeDoseMg) + " mg requires " + cleanUnits(activeUnits) + " units on the " + state.selectedNeedle.label + ". Clinical trials started at 2 mg and increased every 4 weeks. Most people find their optimal dose between 6-8 mg.";
+          ? Number(manualDoseValue.value || 0) + " mcg requires " + cleanUnits(activeUnits) + " units on the " + state.selectedNeedle.label + "."
+          : formatDose(activeDoseMg) + " mg requires " + cleanUnits(activeUnits) + " units on the " + state.selectedNeedle.label + ".";
         doseGridLabel.textContent = "Common Doses At This Concentration";
         renderComparisonTable("BAC Comparison For Manual Dose", peptideMg, activeDoseMg, bacMl);
         summary = {
