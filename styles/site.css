@@ -18,6 +18,7 @@
   --radius-sm: 12px;
   --max-width: 1280px;
   --header-height: 72px;
+  --editorial-hero-height: 760px;
   --font-display: "Bebas Neue", "Arial Narrow", Impact, sans-serif;
   --font-body: "Inter", "Helvetica Neue", "Segoe UI", Arial, sans-serif;
   --font-mono: "SFMono-Regular", Menlo, Consolas, monospace;
@@ -217,8 +218,8 @@ section { padding: 22px 0 24px; }
   position: relative;
   width: 100vw;
   margin-left: calc(50% - 50vw);
-  height: 720px;
-  min-height: 720px;
+  height: var(--editorial-hero-height);
+  min-height: var(--editorial-hero-height);
   overflow: hidden;
   background: var(--surface);
   box-shadow: var(--shadow);
@@ -424,13 +425,13 @@ section { padding: 22px 0 24px; }
 }
 
 .page-hero-shell--article {
-  min-height: 600px;
+  min-height: var(--editorial-hero-height);
 }
 
 .page-hero-shell--article .page-hero-copy,
 .page-hero-shell--article .page-hero-media,
 .page-hero-copy-inner--article {
-  min-height: 600px;
+  min-height: var(--editorial-hero-height);
 }
 
 .page-hero-copy-inner--article {
@@ -439,13 +440,13 @@ section { padding: 22px 0 24px; }
 }
 
 .page-hero-shell--about {
-  min-height: 600px;
+  min-height: var(--editorial-hero-height);
 }
 
 .page-hero-shell--about .page-hero-copy,
 .page-hero-shell--about .page-hero-media,
 .page-hero-copy-inner--about {
-  min-height: 600px;
+  min-height: var(--editorial-hero-height);
 }
 
 .page-hero-copy-inner--about {
