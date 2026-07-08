@@ -6,6 +6,7 @@
 
   var supportedProfileRoutes = {
     "retatrutide": "peptides/retatrutide.html",
+    "tirzepatide": "peptides/tirzepatide.html",
     "nad-plus": "peptides/nad-plus.html",
     "klow": "peptides/klow.html",
     "mots-c": "peptides/mots-c.html",
@@ -14,9 +15,10 @@
 
   var doseOptions = [0.25, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 5, 6, 7, 8, 9, 10, 12];
   var needles = [
-    { id: "31g", label: "31G", unitsPerMl: 100, volume: "1 mL (100 units)" },
+    { id: "31g-03", label: "31G x 6mm", unitsPerMl: 100, capacityUnits: 30, volume: "0.3 mL (30 units)" },
+    { id: "31g", label: "31G", unitsPerMl: 100, capacityUnits: 100, volume: "1 mL (100 units)" },
     { id: "29g", label: "29G", unitsPerMl: 100, volume: "1 mL (100 units)" },
-    { id: "28g", label: "28G", unitsPerMl: 50, volume: "0.5 mL (50 units)" }
+    { id: "28g", label: "28G", unitsPerMl: 50, capacityUnits: 50, volume: "0.5 mL (50 units)" }
   ];
 
   var categoryProfiles = {
@@ -485,6 +487,10 @@
       return units / state.selectedNeedle.unitsPerMl;
     }
 
+    function selectedNeedleCapacity() {
+      return state.selectedNeedle.capacityUnits || state.selectedNeedle.unitsPerMl;
+    }
+
     function cleanUnits(units) {
       return Number(units.toFixed(1));
     }
@@ -511,7 +517,8 @@
     }
 
     function recommendedNeedleForVolume(volumeMl) {
-      if (volumeMl <= 0.5) return needles[0];
+      if (volumeMl <= 0.3) return needles[0];
+      if (volumeMl <= 0.5) return needles[3];
       if (volumeMl <= 1) return needles[2];
       return needles[1];
     }
@@ -650,7 +657,7 @@
     function renderUnitMeterScale() {
       if (!unitMeter || !unitMeterScale) return;
 
-      var maxUnits = state.selectedNeedle.unitsPerMl;
+      var maxUnits = selectedNeedleCapacity();
       var labelStep = 5;
       var labels = [];
 
@@ -672,7 +679,7 @@
 
     function setNeedleFill(units) {
       if (!needleFill) return;
-      var fillPercent = Math.max(0, Math.min(100, (units / state.selectedNeedle.unitsPerMl) * 100));
+      var fillPercent = Math.max(0, Math.min(100, (units / selectedNeedleCapacity()) * 100));
       needleFill.style.width = Math.max(fillPercent, units > 0 ? 10 : 0) + "%";
       renderUnitMeterScale();
     }
@@ -740,7 +747,7 @@
           };
         })
         .filter(function (option) {
-          return option.units > 0 && option.units <= state.selectedNeedle.unitsPerMl;
+          return option.units > 0 && option.units <= selectedNeedleCapacity();
         })
         .sort(function (a, b) {
           return a.cleanScore - b.cleanScore || a.units - b.units;
@@ -879,7 +886,7 @@
           calcStatus.textContent = "Enter syringe units to see how much peptide that draw delivers.";
           return;
         }
-        if (activeUnits > state.selectedNeedle.unitsPerMl) {
+        if (activeUnits > selectedNeedleCapacity()) {
           calcStatus.textContent = "That draw exceeds the selected syringe capacity. Choose a larger syringe or reduce the units.";
         }
         var reverseResult = computeDoseFromUnits(activeUnits, concentration);
@@ -959,7 +966,7 @@
             calcStatus.textContent = "Enter desired syringe units to solve the BAC water amount for this dose target.";
             return;
           }
-          if (desiredUnitsValue > state.selectedNeedle.unitsPerMl) {
+          if (desiredUnitsValue > selectedNeedleCapacity()) {
             calcStatus.textContent = "That desired draw exceeds the selected syringe capacity. Lower the units or choose a larger syringe.";
           }
           bacMl = solveBacForUnits(peptideMg, activeDoseMg, desiredUnitsValue);
